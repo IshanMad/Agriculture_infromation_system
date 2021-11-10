@@ -1,0 +1,2313 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+    <style>
+    .avatar1 {
+        vertical-align: middle;
+        width: 70px;
+        height: 70px;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        }
+        .yourElement{
+
+           margin-left: 10px;
+
+        }
+        img {
+            vertical-align: middle;
+            border-style: none;
+            width: 250px;
+        }
+        .display-4 {
+            font-size: 1.7rem;
+            font-weight: 100;
+            line-height: 1.2;
+        }
+        .ok
+        {
+            color:#8B0000;
+        }
+
+    .form-row1 {
+      display: flex;
+      flex-wrap: wrap;
+      margin-right: 50px;
+      margin-left: 100px;
+
+      > .col,
+      > [class*="col-"] {
+        padding-right: 5px;
+        padding-left: 5px;
+      }
+}
+    </style>
+    <script>
+        $(document).ready(function() {
+          $('#crop_tbl').DataTable();
+          $('#my_crop_tbl').DataTable();
+        });
+
+        function farmercropform(){
+                document.getElementById("cropvalidate").innerHTML = '';
+                document.getElementById("crop_subvalidates").innerHTML = '';
+                document.getElementById("productiontypesvalidate").innerHTML = '';
+                document.getElementById("crop_subvalidate").innerHTML = ' ';
+                document.getElementById("surfacevalidation").innerHTML = '';
+                var crop_validate = document.addfarmercrops.crops;
+                var sub_crop_validate = document.addfarmercrops.subcrops;
+                var sub_crop_productiontypes = document.addfarmercrops.productiontypes;
+                var sub_crop_plantingunit = document.addfarmercrops.plantingunit;
+                var sub_crop_surface = document.addfarmercrops.surface;
+
+                if(crop_select_Validation(crop_validate))
+                {
+                    if(sub_crop_Validation(sub_crop_validate))
+                    {
+                        if(sub_crop_production_types_Validation(sub_crop_productiontypes))
+                        {
+                            if(sub_crop_plantingunit_Validation(sub_crop_plantingunit))
+                            {
+                                if(sub_crop_surface_Validation(sub_crop_surface))
+                                {
+                                    return true;
+                                }
+
+                            }
+                        }
+                    }
+                }
+                return false;
+                function crop_select_Validation(crop_validate)
+                {
+
+                   console.log(crop_validate.value);
+                    if(crop_validate.value=="Please Select")
+                    {
+                        document.getElementById("cropvalidate").innerHTML = 'Please Select ';
+                        return false;
+                    }
+                    return true;
+
+                }
+                function sub_crop_Validation(sub_crop_validate)
+                {
+
+                    if(sub_crop_validate.value=="Please Select")
+                    {
+                        document.getElementById("crop_subvalidates").innerHTML = 'Please Select ';
+                        return false;
+                    }
+
+                    return true;
+
+
+                }
+                 function sub_crop_production_types_Validation(sub_crop_productiontypes)
+                {
+
+                    if(sub_crop_productiontypes.value=="Please Select")
+                    {
+                        document.getElementById("productiontypesvalidate").innerHTML = 'Please Select ';
+                        return false;
+                    }
+
+                    return true;
+
+
+                }
+                function sub_crop_plantingunit_Validation(sub_crop_plantingunit)
+                {
+
+                    if(sub_crop_plantingunit.value=="Please Select")
+                    {
+                        document.getElementById("crop_subvalidate").innerHTML = 'Please Select ';
+                        return false;
+                    }
+
+                    return true;
+
+
+                }
+                function sub_crop_surface_Validation(sub_crop_surface)
+                {
+
+                    if(sub_crop_surface.value.length == 0)
+                    {
+                        document.getElementById("surfacevalidation").innerHTML = 'Please Surface';
+
+                         return false;
+                    }
+
+                        return true;
+
+
+                }
+
+        }
+
+
+    </script>
+    {%if  current_user.active==1 %}
+        {%if  current_user.usertype=='ARPA' %}
+            <div class="container-fluid">
+				<ul class="nav nav-pills justify-content-center">
+                  {% for  myfarm in farmdata %}
+                  <li class="nav-item">
+                   <a class="nav-link " href="{{url_for('manage_farms',id=myfarm.id)}}">Home</a>
+                  </li>
+
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('farm_manage_farm_crop',id=myfarm.id)}}">Crop Management</a>
+                  </li>
+
+                    {% endfor %}
+             </ul>
+			<div class="row">
+                <div class="col-md-8">
+                    <h4 class="font-weight-bold">Crop Management</h4>
+                     {% for  myfarm in farmdata %}
+                     <h6 style="color:red">Farm Name:{{myfarm.farmname}}</h6>
+                     {% endfor %}
+
+                     <h6 style="color:green">Season Name:{{current_season}}</h6>
+
+
+                </div>
+                <div class="col-md-4">
+						<div class="input-group">
+							<span class="input-group-prepend">
+								<button type="button" class="btn btn-primary btnaction" data-toggle="modal" data-target=".bd-example-modal-lg" style="margin-left:190px;">Add new Crop</button>
+							</span>
+						</div>
+				</div>
+            </div>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="myModal">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Insert New Crop</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" name="addfarmercrops" action="/insert_farm_crop_by_arpa" onsubmit="return farmercropform()">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="crops">Crop Category</label>
+                                       <select name="crops" class="form-control" id="crops">
+                                          <option value="Please Select">Please Select</option>
+                                          {% for  row in system_inbuild_crops  %}
+                                           <option value="{{row.id}}">{{row.system_crop_name}}</option>
+                                          {% endfor %}
+                                       </select>
+                                        <p id="cropvalidate" style="color:red;"></p>
+                                </div>
+                                  <div class="form-group col-md-6">
+                                    <label for="subcrops">Crop Sub Category</label>
+                                       <select name="subcrops" class="form-control" id="subcrops">
+
+
+                                       </select>
+                                        <p id="crop_subvalidates" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="subcrops">Production Type</label>
+                                        <select name="productiontypes" class="form-control" id="productiontypes">
+                                          <option value="Please Select">Please Select</option>
+                                          <option value="1">Conventional Production</option>
+                                          <option value="2">Organic Production</option>
+                                          <option value="3">Intergrated Production</option>
+
+                                       </select>
+                                        <p id="productiontypesvalidate" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="subcrops">Planting Unit</label>
+                                        <select name="plantingunit" class="form-control" id="plantingunit">
+                                          <option value="Please Select">Please Select</option>
+                                          <option value="Weight">Weight</option>
+                                          <option value="Pieces">Pieces</option>
+                                       </select>
+                                        <p id="crop_subvalidate" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="surface">Surface(Ha)</label>
+                                        <input class="form-control" id="surface" name="surface" type="number">
+                                        <p id="surfacevalidation" style="color:red;"></p>
+                                </div>
+                            </div>
+                            {% for  myfarmform in farmdata %}
+                             <input id="fid" name="fid" type="hidden" value="{{myfarmform.id}}">
+                            {% endfor %}
+
+                            <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Insert Crop">
+                        </form>
+                          <div class="text-nowrap">
+                          <p class="font-italic font-weight-bold">Crop:-This Selections can not change be leater !</p>
+                          <p class="font-italic font-weight-bold">Paknting Units:-Planting Units Cannt Change Be leater!</p>
+                          </div>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+                <h5 style="color:red; margin-left:10px;">Crop Categories</h5>
+            <table id="crop_tbl" class="table display" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+                    <th>    </th>
+                    <th>Name</th>
+                    <th>Crop Category</th>
+                    <th>Maturity</th>
+                    <th>More Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for  row in system_inbuild_crops  %}
+                    <tr>
+                    <td><img src="/static/crop_images/{{row.system_crop_image}}" class="avatar1"></td>
+                    <td>{{row.system_crop_name}}</td>
+                    <td>{{row.system_crop_catgoery}}</td>
+                    <td>{{row.system_crop_growing_time}}</td>
+                    <td><button type="button" class="btn btn-info btn-sm btnseeall" data-toggle="modal" data-target="#mores" value="{{row.id}}">See More</button></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+                 <h5 style="color:red;  margin-left:10px;">Your Farm Crops</h5>
+              <table id="my_crop_tbl" class="table display" cellspacing="0" width="100%">
+                  <thead>
+                    <tr>
+                        <th> </th>
+                        <th>Varitey Name</th>
+                        <th>Production Type</th>
+                        <th>Planting Unit</th>
+                        <th>Surface</th>
+                        <th>Crop Details</th>
+                        <th>Crop Management</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for  my_farm_crop in myfarmCrop  %}
+                        <tr>
+                            <td><img src="/static/crop_images/{{my_farm_crop.cropImage}}" class="avatar1"></td>
+                            <td>{{my_farm_crop.cropeName}}</td>
+                                {%if my_farm_crop.production_type=="1" %}
+                            <td>Conventional Production</td>
+                                {%elif my_farm_crop.production_type=="2" %}
+                            <td>Organic Production</td>
+                                {%else%}
+                            <td>Intergrated Production</td>
+                                {% endif %}
+                            <td>{{my_farm_crop.panting_unit}}</td>
+                            <td>{{my_farm_crop.crop_surface_on_farm}}</td>
+                            <td><button type="button" class="btn btn-info btn-sm" data-toggle="modal" onclick="see_my_farm_crop_detail_Function(this.value)" data-target="#crpdetail" value="{{my_farm_crop.sys_sub_crop_id}}">Crop Detalis</button></td>
+                            <td><button type="button" class="btn btn-success btn-sm btnaction1" data-toggle="modal"  onclick="see_my_farm_crop_manage_Function(this.value)" data-target="#scrpdetail" value="{{my_farm_crop.sys_sub_crop_id}}">See More</button></td>
+
+                        </tr>
+                    {% endfor %}
+                  </tbody>
+              </table>
+                 <!--My cROP Popup Model-->
+                <div class="modal fade" id="crpdetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content ">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="#1">Your Farm Crop Detalis</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <ul class="nav nav-tabs" id="myfarmmoredetailed" role="tablist">
+                              <li class="nav-item">
+                                <a class="nav-link active" id="crpbackground-tab" data-toggle="tab" href="#crpbackground" role="tab" aria-controls="crpbackground" aria-selected="true">Background</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="crpyield-tab" data-toggle="tab" href="#crpyield" role="tab" aria-controls="crpyield" aria-selected="false" >Yield</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="crpmaturity-tab" data-toggle="tab" href="#crpmaturity" role="tab" aria-controls="crpmaturity" aria-selected="false">Maturity</a>
+                              </li>
+                               <li class="nav-item">
+                                <a class="nav-link" id="crpimportanttrait-tab" data-toggle="tab" href="#crpimportanttrait" role="tab" aria-controls="crpimportanttrait" aria-selected="false">More Details</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="crpreactiondisease-tab" data-toggle="tab" href="#crpreactiondisease" role="tab" aria-controls="crpreactiondisease" aria-selected="false">Reaction To Pest and Diseas</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="crppest-tab" data-toggle="tab" href="#crppest" role="tab" aria-controls="crppest" aria-selected="false">Pest </a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="crpqulityinfo-tab" data-toggle="tab" href="#crpqulityinfo" role="tab" aria-controls="crpqulityinfo" aria-selected="false">Qulity Characteristics</a>
+                              </li>
+                           </ul>
+                        </div>
+                        <div class="tab-content" id="myfarmmoredetailedContent">
+                            <div class="tab-pane fade show active" id="crpbackground" role="tabpanel" aria-labelledby="crpbackground-tab">
+                                <div class="card mb-3" style="max-width: auto;">
+										  <div class="row no-gutters">
+											<div class="col-md-4" >
+												   <div id="crpsubcropimg">
+												   </div>
+											</div>
+											<div class="col-md-8">
+											  <div class="card-body">
+												<h5 class="card-title" id="crp_varityname"></h5>
+                                                  <div class="row">
+                                                  <p class="font-weight-bold">Line Designation:-</p>
+												  <p class="font-italic text-info" id="crp_line_designation"></p>
+                                                  </div>
+                                                  <div class="row">
+														 <p class="font-weight-bold">Pedigree:-</p>
+														 <p class="card-text" id="crp_pedgiree"></p>
+												  </div>
+                                                  <div class="row">
+														 <p class="font-weight-bold">Origin:-</p>
+														 <p class="card-text" id="crp_origin"></p>
+												  </div>
+												  <div class="row">
+														 <p class="font-weight-bold">Method of Propagation:-</p>
+														 <p class="card-text" id="crp_method_of_propagation"></p>
+												  </div>
+
+												<p class="card-text font-weight-light">Created at:<small class="text-muted font-italic" id="crp_inserttime"></small></p>
+											  </div>
+											</div>
+                                      </div>
+									</div>
+                            </div>
+                            <div class="tab-pane fade" id="crpyield" role="tabpanel" aria-labelledby="crpyield-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="crpmaturity" role="tabpanel" aria-labelledby="crpmaturity-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="crpimportanttrait" role="tabpanel" aria-labelledby="crpimportanttrait-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="crpreactiondisease" role="tabpanel" aria-labelledby="crpreactiondisease-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="crppest" role="tabpanel" aria-labelledby="crppest-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="crpqulityinfo" role="tabpanel" aria-labelledby="crpqulityinfo-tab">
+
+                            </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--My Crop Guide-->
+                <div class="modal" id="scrpdetail" tabindex="-1" role="dialog"  aria-hidden="true">
+                  <div class="modal-dialog-xl " role="document">
+                    <div class="modal-content yourElement">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Crop Management</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                            <ul class="nav nav-tabs" id="myTab1" role="tablist">
+                              <li class="nav-item">
+                                <a class="nav-link active" id="fertilizer-tab" data-toggle="tab" href="#fertilizer" role="tab" aria-controls="fertilizer" aria-selected="true">Certified Chemical Fertilizer Plan</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="fertilizerorganic-tab" data-toggle="tab" href="#fertilizerorganic" role="tab" aria-controls="fertilizerorganic" aria-selected="false">Certifed Organic Fertilizer Plan</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="fertilizerintergrated-tab" data-toggle="tab" href="#fertilizerintergrated" role="tab" aria-controls="fertilizerintergrated" aria-selected="false">Certified Mix Fertilizer Plan</a>
+                              </li>
+                              <li class="nav-item">
+                                  {% for  myfarmform in farmdata %}
+                                <a class="nav-link" id="fertilizerresult-tab" data-toggle="tab" href="#fertilizerresult" role="tab" onclick='return getfertilizerresult()' data-value="{{myfarmform.id}}" aria-controls="fertilizerresult" aria-selected="false">Submit Your Fertilizer Results</a>
+                                  {% endfor %}
+                              </li>
+                                <li class="nav-item">
+                                  {% for  myfarmform in farmdata %}
+                                <a class="nav-link" id="pestdisease-tab" data-toggle="tab" href="#pestdisease" role="tab" onclick='seediseaseFunction()' data-value="{{myfarmform.id}}" aria-controls="pestdisease" aria-selected="false">Pest and Diseases</a>
+                                  {% endfor %}
+                              </li>
+                               <li class="nav-item">
+                                  {% for  myfarmform in farmdata %}
+                                <a class="nav-link" id="farm_pestdisease_result-tab" data-toggle="tab" href="#farm_pestdisease_result" role="tab" onclick='return seefarmdiseaseFunction()' data-value="{{myfarmform.id}}" aria-controls="farm_pestdisease_result" aria-selected="false">Submit Your Pest And Diseases Details</a>
+                                  {% endfor %}
+                              </li>
+
+                            </ul>
+                            <div class="tab-content" id="myTabContent1">
+                              <div class="tab-pane fade show active" id="fertilizer" role="tabpanel" aria-labelledby="fertilizer-tab">
+                                <h5 class="font-weight-normal">Fertilizer Plan MhaSeason </h5>
+                                  <table id="crp_fertilizer_con_production_mha"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+											<th>Varitey Name</th>
+                                            <th>Maturity</th>
+                                            <th>Usage</th>
+											<th>Fertilizer Name</th>
+                                            <th>Fertilizer Amount(Ha\Kg)</th>
+                                        </tr>
+                                      </thead>
+                                       <tbody id="con_production_mha">
+
+                                       </tbody>
+
+                                  </table>
+                                  <h5 class=" font-weight-normal">Fertilizer Plan Mha Season </h5>
+                                  <table id="crp_fertilizer_con_production_yala"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+											<th>Variety</th>
+                                            <th>Maturity</th>
+                                            <th>Usage</th>
+											<th>Ferilizer Name</th>
+                                            <th>Fertilizer Amount(Ha\Kg)</th>
+                                        </tr>
+                                      </thead>
+                                       <tbody id="con_production_yala">
+
+                                       </tbody>
+
+                                  </table>
+                              </div>
+                              <div class="tab-pane fade" id="fertilizerorganic" role="tabpanel" aria-labelledby="fertilizerorganic-tab">
+                                  <h6 class="display-4 font-weight-normal">Fertlizer Plan Maha Season </h6>
+                                  <table id="crp_fertilizer_organic_production_mha"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+											<th>Varity Name</th>
+                                            <th>Maturity</th>
+                                            <th>Usgae</th>
+											<th>Fertilizer Name</th>
+                                            <th>Fertilizer Amount(Ha\Kg)</th>
+                                        </tr>
+                                      </thead>
+                                       <tbody id="con_production_organic_mha">
+
+                                       </tbody>
+
+                                  </table>
+                                  <h5 class="font-weight-normal">Fertlizer Plan Yala Season</h5>
+                                  <table id="crp_fertilizer_organic_production_yala"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+											<th>Varity Name</th>
+                                            <th>Maturity</th>
+                                            <th>Usgae</th>
+											<th>Fertilizer Name</th>
+                                            <th>Fertilizer Amount(Ha\Kg)</th>
+                                        </tr>
+                                      </thead>
+                                       <tbody id="organic_production_yala">
+
+                                       </tbody>
+                                  </table>
+                              </div>
+                              <div class="tab-pane fade" id="fertilizerintergrated" role="tabpanel" aria-labelledby="fertilizerintergrated-tab">
+                                   <h5 class=" font-weight-normal">Fertilizer Plan Maha Season</h5>
+                                  <table id="crp_fertilizer_intergrated_production_mha"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+											<th>Varity Name</th>
+                                            <th>Maturity</th>
+                                            <th>Usage</th>
+											<th>Ferilizer Name</th>
+                                            <th>Ferilizer Amount (Ha\Kg)</th>
+                                        </tr>
+                                      </thead>
+                                       <tbody id="con_production_intergrated_mha">
+
+                                       </tbody>
+
+                                  </table>
+                                  <h5 class=" font-weight-normal">Fertlizer Plan Yala Season</h5>
+                                  <table id="crp_fertilizer_intergrated_production_yala"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+										    <th>Varitey Name</th>
+                                            <th>Maturity</th>
+                                            <th>Fertilizer Usage</th>
+											<th>Fertilizer Name</th>
+                                            <th>Fertilizer Amount (ha\Kg)</th>
+                                        </tr>
+                                      </thead>
+                                       <tbody id="organic_intergrated_yala">
+
+                                       </tbody>
+                                  </table>
+                              </div>
+                                <script>
+                                    function fertilizervalidateForm()
+                                    {
+
+                                        document.getElementById("fertilzeramountvalidate").innerHTML = '';
+                                        document.getElementById("fertilzersurfacevalidate").innerHTML = '';
+                                        document.getElementById("fertilzerdatevalidate").innerHTML = '';
+                                        var fertilizerdate = document.fertilizerForm.fertilizerdate;
+                                        var fertilzeramount = document.fertilizerForm.fertilzeramount;
+                                        var fertilzersurface = document.fertilizerForm.fertilzersurface;
+
+                                        if (fertilizerdateValidation(fertilizerdate))
+                                        {
+                                            if(fertilzeramountValidation(fertilzeramount))
+                                            {
+                                                if(fertilzersurfaceValidation(fertilzersurface))
+                                                {
+                                                    return true;
+                                                }
+
+                                            }
+                                        }
+                                        return false;
+                                        function fertilizerdateValidation(fertilizerdate)
+                                        {
+                                            if (fertilizerdate.value.length == 0)
+                                            {
+                                             document.getElementById("fertilzerdatevalidate").innerHTML = 'Please Select Date';
+
+                                                return false;
+                                             }
+                                            return true;
+
+                                        }
+                                        function fertilzeramountValidation(fertilzeramount)
+                                        {
+                                            var amount = /^[0-9]+$/;
+                                            if(fertilzeramount.value.match(amount))
+                                            {
+                                                 return true;
+                                            }
+                                            else
+                                            {
+                                                document.getElementById("fertilzeramountvalidate").innerHTML = 'Please Enter Valid Data';
+                                                return false;
+                                            }
+                                        }
+
+                                        function fertilzersurfaceValidation(fertilzersurface)
+                                        {
+                                            var surface = /^[0-9]+$/;
+                                            if(fertilzersurface.value.match(surface))
+                                            {
+                                                return true;
+                                            }
+                                            else
+                                            {
+                                                document.getElementById("fertilzersurfacevalidate").innerHTML = 'Please Enter Valid Data';
+                                            }
+
+                                        }
+
+                                    }
+                                </script>
+
+                               <div class="tab-pane fade" id="fertilizerresult" role="tabpanel" aria-labelledby="fertilizerresult-tab">
+                                  <h5 class="font-weight-bold">Submit Fertrlizer Result</h5>
+                                   <div class="alert alert-danger" role="alert">
+                                      You Cann't Update After Submit Fertlizer Results!
+                                   </div>
+                                   <form method="POST" name="fertilizerForm" action="/submit_furtilizer_result_by_arpa" onsubmit="return fertilizervalidateForm()" >
+                                      <div class="form-row1">
+                                       <div class="form-group col-md-6">
+                                           <label for="varityname">Variety Name</label>
+                                           <select class="form-control" id="frtilizerresultvarity" name="frtilizerresultvarity" required="">
+                                          </select>
+                                       </div>
+                                        <div class="form-group col-md-6">
+                                           <label for="fertilizername">Fertlizer Category</label>
+                                           <select class="form-control" id="crop_all_fertilzers" name="crop_all_fertilzers" required="">
+                                          </select>
+                                       </div>
+                                        <div class="form-group col-md-6">
+                                           <label for="fertilizerdate">Date</label>
+                                           <input type="date" class="form-control" id="fertilizerdate" name="fertilizerdate" required="">
+                                           <p id="fertilzerdatevalidate" style="color:red;"></p>
+                                       </div>
+                                       <div class="form-group col-md-6">
+                                           <label for="fertiamount">Fertilizer Amount(Ha\Kg)</label>
+                                           <input class="form-control" id="fertilzeramount" name="fertilzeramount"  type="text">
+                                           <p id="fertilzeramountvalidate" style="color:red;"></p>
+                                       </div>
+                                        <div class="form-group col-md-6">
+                                           <label for="fertisurface">Surface</label>
+                                           <input class="form-control" id="fertilzersurface" name="fertilzersurface"  type="text">
+                                           <p id="fertilzersurfacevalidate" style="color:red;"></p>
+                                       </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="fertilizerresult">Fertilzer Result</label>
+                                            <select class="form-control" id="fertilizer_result" name="fertilizer_result" required="">
+                                                <option value="2">High</option>
+                                                <option value="1">Meduim</option>
+                                                <option value="0">Low</option>
+                                            </select>
+                                        </div>
+                                     </div>
+                                     {% for  myfarmform in farmdata %}
+                                        <input id="farm_id" name="farm_id" type="hidden" value="{{myfarmform.id}}">
+                                    {% endfor %}
+                                       <input id="subcrop_id" name="subcrop_id" type="hidden" >
+                                    <input class="btn btn-primary" id="submit" name="submit" type="submit" value="ඇතුලු කරන්න">
+                                   </form>
+                                   <h6 class="display-4 font-weight-normal">Your Farm Fertilizer Result</h6>
+                                  <table id="farm_crp_result"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+											<th>Variety Name</th>
+                                            <th>Crop Category</th>
+                                            <th>Crop Category Name</th>
+											<th>Ferilizer Name</th>
+                                            <th>Fertilizer Sub Name</th>
+                                            <th>Surface</th>
+                                            <th>Fertilizer Amount (Ha\Kg)</th>
+                                            <th>Fertilizer Result</th>
+                                        </tr>
+                                      </thead>
+                                       <tbody id="show_crp_result">
+
+                                       </tbody>
+                                  </table>
+                                   <script>
+                                       function getfertilizerresult(){
+                                        document.addEventListener("click", function(evt){
+                                            var el = document.getElementById( 'fertilizerresult-tab' );
+                                            el.getAttribute( 'data-value' );
+                                            var id = el.dataset.value
+                                            console.log(id);
+
+									   let show_crp_result =  document.getElementById("show_crp_result")
+                                       fetch('/get_system_fertilizer_result_in_farm/'+id).then(function(response){
+                                            response.json().then(function(data){
+                                                let fertilizerresultHTML = '';
+                                                 for(let farmfertilizerresult of data.farmfertilizerresults){
+
+                                                     fertilizerresultHTML+='<tr>';
+                                                     fertilizerresultHTML +='<td>'+farmfertilizerresult.variety_name+'</td>';
+                                                     fertilizerresultHTML +='<td>'+farmfertilizerresult.system_crop_name+'</td>';
+                                                     fertilizerresultHTML +='<td>'+farmfertilizerresult.fertilizer_name+'</td>';
+                                                     fertilizerresultHTML +='<td>'+farmfertilizerresult.main_fertilizer_type+'</td>';
+                                                     fertilizerresultHTML +='<td>'+farmfertilizerresult.sub_fertilizer_type+'</td>';
+                                                     fertilizerresultHTML +='<td>'+farmfertilizerresult.fertilizer_surface+'</td>';
+                                                     fertilizerresultHTML +='<td>'+farmfertilizerresult.farm_used_fertilizer_amount+'</td>';
+                                                     var fartilizer_result = farmfertilizerresult.fertilizer_result;
+                                                     if(fartilizer_result==0)
+                                                     {
+                                                        fertilizerresultHTML +='<td>'+'Low'+'</td>';
+                                                     }
+                                                     else if(fartilizer_result==1)
+                                                     {
+                                                        fertilizerresultHTML +='<td>'+'Medium'+'</td>';
+                                                     }
+                                                     else
+                                                     {
+                                                        fertilizerresultHTML +='<td>'+'Hight'+'</td>';
+                                                     }
+                                                     fertilizerresultHTML+='</tr>';
+                                                 }
+                                                 show_crp_result.innerHTML = fertilizerresultHTML;
+
+                                            });
+                                        });
+                                        });
+                                        $('#farm_crp_result').DataTable({
+                                             destroy: true,
+                                             "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                                        });
+                                    }
+                                   </script>
+                               </div>
+                               <div class="tab-pane fade" id="pestdisease" role="tabpanel" aria-labelledby="pestdisease-tab">
+                                   <h5 class="font-weight-bold">Agri Reserch Center Identified Diseases Details</h5>
+                                   <table id="farm_diseases_details"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+											<th>Disease Name</th>
+                                            <th>Crop Category</th>
+                                            <th>Resistatnt</th>
+											<th>Moderatly Ressistant</th>
+                                            <th>Subceptible</th>
+                                            <th>Moderatly Subceptible</th>
+                                            <th>More Detail</th>
+
+                                        </tr>
+                                      </thead>
+                                      <tbody id="getdiseasdetails">
+
+                                      </tbody>
+                                  </table>
+                                   <h5 class="font-weight-bold">Agri Reserch Center Identified Pest Details</h5>
+                                   <table id="farm_pest_details"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+											<th>Pest Name</th>
+                                            <th>Crop Category</th>
+                                            <th>Resistatnt</th>
+											<th>Moderatly Ressistant</th>
+                                            <th>Subceptible</th>
+                                            <th>Moderatly Subceptible</th>
+                                            <th>More Detail</th>
+
+                                        </tr>
+                                      </thead>
+                                      <tbody id="getpestdetails">
+
+                                      </tbody>
+                                  </table>
+                            </div>
+                            <div class="tab-pane fade" id="farm_pestdisease_result" role="tabpanel" aria-labelledby="farm_pestdisease_result-tab">
+                                   <h5 class="font-weight-bold">Farm Pest and Disease Solutions</h5>
+                                   <div class="alert alert-danger" role="alert">
+											This Enterd data cant be edit Future
+                                   </div>
+                                    <script>
+                                        function  upload()
+                                        {
+                                               document.getElementById("desvalidate").innerHTML = '';
+                                               document.getElementById("threatmentnamevalidate").innerHTML = '';
+
+                                               var tname = document.petthreatment.threatmentname;
+                                               var descrp = document.petthreatment.descreption;
+
+                                               if (tnameValidation(tname))
+                                               {
+                                                    if(descrpValidation(descrp))
+                                                    {
+                                                        return true;
+                                                    }
+                                               }
+                                               return false;
+
+                                               function tnameValidation(tname)
+                                               {
+                                                    if (tname.value.length == 0)
+                                                    {
+                                                        document.getElementById("threatmentnamevalidate").innerHTML = 'Required';
+                                                         return false;
+                                                    }
+                                                    return true;
+                                               }
+
+                                               function descrpValidation(descrp)
+                                               {
+                                                    if (descrp.value.length == 0)
+                                                    {
+                                                        document.getElementById("desvalidate").innerHTML = 'Required';
+                                                         return false;
+                                                    }
+                                                    return true;
+                                               }
+
+                                        }
+                                    </script>
+                                    <form enctype="multipart/form-data" action="/submit_pest_d_info_by_arpa" method="post" onsubmit="return upload();" name="petthreatment">
+                                        <div class="form-row1">
+                                            <div class="form-group col-md-6">
+                                               <label for="varityname">Crop Sub Category</label>
+                                               <select class="form-control" id="pest_and_diseas_varity" name="pest_and_diseas_varity" required="">
+                                              </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                    <label for="pestdiseasnames">Pest or Disease Name</label>
+                                                   <select class="form-control" id="pestdiseasname" name="pestdiseasname" required="">
+                                                       {% for  raw in system_pest_and_diseases %}
+                                                             <option value="{{raw.id}}">{{raw.threat_name}}</option>
+                                                       {% endfor %}
+                                                  </select>
+                                            </div>
+                                             <div class="form-group col-md-6">
+                                                    <label for="threatmenttype">Threatment Type</label>
+                                                   <select class="form-control" id="threatmenttype" name="threatmenttype" required="">
+                                                             <option value="1">Chemical Threatment</option>
+                                                             <option value="2">Mixed Threatment</option>
+                                                             <option value="3">Biologicall Threatment</option>
+                                                             <option value="4">Other</option>
+                                                             <option value="5">Resistant Variety Control</option>
+                                                             <option value="6">Fertilizer Contorl</option>
+                                                             <option value="7">Water Control</option>
+                                                            <option value="8">Land Preparing Phace Control</option>
+                                                  </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                               <label for="threatmentname">Threatment Name</label>
+                                               <input class="form-control" id="threatmentname" name="threatmentname"  type="text">
+                                                <p id="threatmentnamevalidate" style="color:red;"></p>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                               <label for="threatmenchem">Threatment Chemical Name</label>
+
+                                                <textarea class="form-control" id="threatmentchemicalamount" name="threatmentchemicalamount" ></textarea>
+                                            </div>
+                                             <div class="form-group col-md-6">
+                                               <label for="descreption">Details</label>
+                                                 <textarea class="form-control" id="descreption" name="descreption"  ></textarea>
+
+                                               <p id="desvalidate" style="color:red;"></p>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                               <label for="optdescreption">Other Details(Optional)</label>
+                                                 <textarea class="form-control" id="optinal_details" name="optinal_details"  ></textarea>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                            <label for="fpreventesult">Reaction Level</label>
+                                            <select class="form-control" id="prevention_level" name="prevention_level" required="">
+                                                <option value="2">High</option>
+                                                <option value="1">Meduim</option>
+                                                <option value="0">Low</option>
+                                            </select>
+                                        </div>
+                                           {% for  myfarmform in farmdata %}
+                                                <input id="farm_ids" name="farm_ids" type="hidden" value="{{myfarmform.id}}">
+                                            {% endfor %}
+                                                <input id="syssubcrp_id" name="syssubcrp_id" type="hidden" >
+
+                                        </div>
+                                         <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Insert">
+                                    </form>
+                                       <h6>All Threatment Details</h6>
+                                    <table id="farm_pest"  class="table display" cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Crop</th>
+                                                <th>Pest and Disease name</th>
+                                                <th>Threat Method</th>
+                                                <th>Threatment Name</th>
+                                                <th>Chemical Amount</th>
+                                                <th>Other Details</th>
+                                                <th>Reaction Level</th>
+                                            </tr>
+                                        <thead>
+                                        <tbody id="show_crp_disease_result">
+
+                                        </tbody>
+                                    </table>
+                                <script>
+                                   function seefarmdiseaseFunction(){
+                                        document.addEventListener("click", function(evt){
+                                            var el = document.getElementById( 'farm_pestdisease_result-tab' );
+                                            el.getAttribute( 'data-value' );
+                                            var id = el.dataset.value
+                                            console.log(id);
+                                            let show_crp_results =  document.getElementById("show_crp_disease_result")
+                                            fetch('/get_farm_pest_details/' + id).then(function(response){
+                                            response.json().then(function(data){
+                                                  let tblesHTML = '';
+                                                    for(let farm_pest_detail of data.farm_pest_details){
+                                                        tblesHTML+='<tr>';
+                                                        tblesHTML +='<td>'+farm_pest_detail.pest_or_diseas_name+'</td>';
+                                                        tblesHTML +='<td>'+farm_pest_detail.variety_name+'</td>';
+                                                        var trttype = farm_pest_detail.threatment_type
+                                                        if(trttype==1)
+                                                        {
+                                                            tblesHTML +='<td>'+'රසායනික පාලනය'+'</td>';
+                                                        }
+                                                        else if(trttype==2)
+                                                        {
+                                                            tblesHTML +='<td>'+'එකා බද්ධ පාලනය'+'</td>';
+                                                        }
+                                                         else if(trttype==3)
+                                                        {
+                                                            tblesHTML +='<td>'+'ජිව විදයාත්මක පාලනය'+'</td>';
+                                                        }
+                                                        else if(trttype==4)
+                                                        {
+                                                            tblesHTML +='<td>'+'වෙනත්'+'</td>';
+                                                        }
+                                                        else if(trttype==5)
+                                                        {
+                                                            tblesHTML +='<td>'+'ප්‍රතිරෝදි ප්‍රබෙද මගින් පාලනය'+'</td>';
+
+                                                        }
+                                                        else if(trttype==6)
+                                                        {
+                                                            tblesHTML +='<td>'+'පොහොර මගින් පාලනය'+'</td>';
+
+                                                        }
+                                                        else if(trttype==7)
+                                                        {
+                                                            tblesHTML +='<td>'+'ජලය මගින් පාලනය'+'</td>';
+
+                                                        }
+                                                        else if(trttype==8)
+                                                        {
+                                                            tblesHTML +='<td>'+'බිම් සකස් කිරිම'+'</td>';
+
+                                                        }
+                                                        else
+                                                        {
+                                                            tblesHTML +='<td>'+'-------'+'</td>';
+                                                        }
+
+
+
+                                                          tblesHTML +='<td>'+farm_pest_detail.threatment_method+'</td>';
+
+
+
+                                                              tblesHTML +='<td>'+farm_pest_detail.threatment_method_descreption+'</td>';
+
+
+
+                                                              tblesHTML +='<td>'+farm_pest_detail.threatment_chemi_amount+'</td>';
+
+
+
+                                                        tblesHTML +='<td>'+farm_pest_detail.optinal_details+'</td>';
+
+                                                        var prvent_level = farm_pest_detail.prevention_level;
+                                                        if(prvent_level==0)
+                                                        {
+                                                            tblesHTML +='<td>'+'Low'+'</td>';
+                                                        }
+                                                        else if(prvent_level==1)
+                                                        {
+                                                             tblesHTML +='<td>'+'Medium'+'</td>';
+                                                        }
+                                                        else{
+                                                             tblesHTML +='<td>'+'Hight'+'</td>';
+                                                        }
+
+                                                        tblesHTML+='</tr>';
+                                                    }
+                                                    show_crp_results.innerHTML = tblesHTML;
+
+                                             });
+                                            });
+                                        });
+                                        $('#farm_pest').DataTable({
+                                             destroy: true,
+                                             "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                                        });
+                                   }
+                                </script>
+                            </div>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                 </div>
+                </div>
+
+               <!--Model Inside Model-->
+                <div class="modal  fade bd-modal-lg" tabindex="-1" role="dialog"  aria-hidden="true" id="crpdiseas">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="mdl">රෝග විස්තරය</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                          <ul class="nav nav-tabs" id="nvtab" role="tablist">
+                              <li class="nav-item">
+                                <a class="nav-link active" id="pand-tab" data-toggle="tab" href="#pand" role="tab" aria-controls="pand" aria-selected="true">Pest and Diseases</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="pands-tab" data-toggle="tab" href="#pands" role="tab" aria-controls="pands" aria-selected="false">Pest and Diseas Threatments</a>
+                              </li>
+
+                           </ul>
+                            <div class="tab-content" id="tbcntent">
+                              <div class="tab-pane fade show active" id="pand" role="tabpanel" aria-labelledby="pand-tab">
+                                  <!--Model inside model-->
+                                  <div class="card mb-3" style="max-width: auto;">
+                                      <div class="row no-gutters">
+                                        <div class="col-md-4" >
+                                               <div id="threat_images">
+                                               </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                          <div class="card-body">
+                                            <h5 class="card-title" id="threat_name"></h5>
+                                              <h6 class="font-italic text-info" id="threat_sci_name"></h6>
+                                              <div class="row">
+                                                     <p class="font-weight-bold">Type of Threat:-</p>
+                                                     <p class="card-text" id="threat_type"></p>
+                                              </div>
+                                              <div class="row">
+                                                  <p class="font-weight-bold">Disease Name:-</p>
+                                                  <p class="card-text" id="disease_name"></p>
+                                              </div>
+                                            <p class="card-text font-weight-light">cREATED AT:<small class="text-muted font-italic" id="timestamp"></small></p>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                  </div>
+                                  <p class="font-weight-bold">Disease Sympthons</p>
+                                  <p class="card-text" id="disease_symptoms"></p>
+                                  <p class="font-weight-bold">Disease Causes</p>
+                                  <p class="card-text" id="disease_causes"></p>
+                                  <p class="font-weight-bold">More Details</p>
+                                  <p class="card-text" id="disease_discreption"></p>
+
+                              </div>
+                              <div class="tab-pane fade" id="pands" role="tabpanel" aria-labelledby="pandse-tab">
+                                  <table id="farm_desaese_solutions"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+
+											<th>Disease or Pest</th>
+                                            <th>Disease Control Method</th>
+                                            <th>Disesase Control Type</th>
+											<th>Chemical Amount</th>
+                                            <th>Detalis</th>
+                                            <th>Reaction Level</th>
+
+                                        </tr>
+                                      </thead>
+                                      <tbody id="desaese_solutions">
+
+                                      </tbody>
+                                  </table>
+
+							  </div>
+
+                            </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
+                <!--More Popup Model-->
+
+                <div class="modal" tabindex="-1" role="dialog"  aria-hidden="true" id="mores">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="#">Crop Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                              <li class="nav-item">
+                                <a class="nav-link active" id="genaral-tab" data-toggle="tab" href="#genaral" role="tab" aria-controls="genaral" aria-selected="true">Crop Info </a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
+                              </li>
+                           </ul>
+                            <div class="tab-content" id="myTabContent">
+                              <div class="tab-pane fade show active" id="genaral" role="tabpanel" aria-labelledby="genaral-tab">
+                                  <!--Model inside model-->
+                                  <div class="card mb-3" style="max-width: auto;">
+                                      <div class="row no-gutters">
+                                        <div class="col-md-4" >
+                                               <div id="myimg">
+                                               </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                          <div class="card-body">
+                                            <h5 class="card-title" id="cropname"></h5>
+                                              <h6 class="font-italic text-info" id="sciname"></h6>
+                                              <div class="row">
+                                                     <p class="font-weight-bold">Crop Growing time:-</p>
+                                                     <p class="card-text" id="growingtime"></p>
+                                              </div>
+                                              <div class="row">
+                                                  <p class="font-weight-bold">Crop Category:-</p>
+                                                  <p class="card-text" id="cropcatgoery"></p>
+                                              </div>
+                                            <p class="card-text font-weight-light">Created at:<small class="text-muted font-italic" id="created_at"></small></p>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                  </div>
+                                  <h6 class="display-4 font-italic">Crop Sub Categories</h6>
+                                  <table id="sub_crop"  class="table display" cellspacing="0" width="100%">
+                                      <thead>
+                                        <tr>
+                                            <th>Variety Name</th>
+                                            <th>Line designation</th>
+                                            <th>Pedgiree</th>
+                                            <th>Origin</th>
+                                            <th>Method of propagation</th>
+                                            <th>More</th>
+                                        </tr>
+                                      </thead>
+                                       <tbody id="subcat">
+
+                                       </tbody>
+                                  </table>
+                              </div>
+                              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+                              <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+                            </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+                <div class="modal fade bd-modal-lg" id="advancecropdetails" data-backdrop="static">
+                    <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="row">
+                          <h4 class="">Crop Sub Category Details-</h4>
+                                <h4 class="display-4" id="tabheder"></h4>
+                            </div>
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div><div class="container"></div>
+                        <div class="modal-body">
+                            <ul class="nav nav-tabs" id="moredetailed" role="tablist">
+                              <li class="nav-item">
+                                <a class="nav-link active" id="background-tab" data-toggle="tab" href="#background" role="tab" aria-controls="background" aria-selected="true">Background</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="yield-tab" data-toggle="tab" href="#yield" role="tab" aria-controls="yield" aria-selected="false" >Yield</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="maturity-tab" data-toggle="tab" href="#maturity" role="tab" aria-controls="maturity" aria-selected="false">Maturity</a>
+                              </li>
+                               <li class="nav-item">
+                                <a class="nav-link" id="importanttrait-tab" data-toggle="tab" href="#importanttrait" role="tab" aria-controls="importanttrait" aria-selected="false">Important Trait</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="reactiondisease-tab" data-toggle="tab" href="#reactiondisease" role="tab" aria-controls="reactiondisease" aria-selected="false">Reaction to Disease</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="pest-tab" data-toggle="tab" href="#pest" role="tab" aria-controls="pest" aria-selected="false">Pest</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="qulityinfo-tab" data-toggle="tab" href="#qulityinfo" role="tab" aria-controls="qulityinfo" aria-selected="false">Qulity Characteristic</a>
+                              </li>
+                           </ul>
+                        </div>
+                        <div class="tab-content" id="moredetailedContent">
+                            <div class="tab-pane fade show active" id="background" role="tabpanel" aria-labelledby="background-tab">
+                                <div class="card mb-3" style="max-width: auto;">
+										  <div class="row no-gutters">
+											<div class="col-md-4" >
+												   <div id="subcropimg">
+												   </div>
+											</div>
+											<div class="col-md-8">
+											  <div class="card-body">
+												<h5 class="card-title" id="varityname"></h5>
+                                                  <div class="row">
+                                                  <p class="font-weight-bold">Line Designation:-</p>
+												  <p class="font-italic text-info" id="line_designation"></p>
+                                                  </div>
+                                                  <div class="row">
+														 <p class="font-weight-bold">Pedigree:-</p>
+														 <p class="card-text" id="pedgiree"></p>
+												  </div>
+                                                  <div class="row">
+														 <p class="font-weight-bold">Origin:-</p>
+														 <p class="card-text" id="origin"></p>
+												  </div>
+												  <div class="row">
+														 <p class="font-weight-bold">Method of Propagation:-</p>
+														 <p class="card-text" id="method_of_propagation"></p>
+												  </div>
+
+												<p class="card-text font-weight-light">Created at:<small class="text-muted font-italic" id="inserttime"></small></p>
+											  </div>
+											</div>
+                                      </div>
+									</div>
+                            </div>
+                            <div class="tab-pane fade" id="yield" role="tabpanel" aria-labelledby="yield-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="maturity" role="tabpanel" aria-labelledby="maturity-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="importanttrait" role="tabpanel" aria-labelledby="importanttrait-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="reactiondisease" role="tabpanel" aria-labelledby="reactiondisease-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="pest" role="tabpanel" aria-labelledby="pest-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="qulityinfo" role="tabpanel" aria-labelledby="qulityinfo-tab">
+
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                          <a href="#" data-dismiss="modal" class="btn">Close</a>
+                        </div>
+                      </div>
+                    </div>
+            </div>
+
+			</div>
+        {%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+					<h4>You Dosent have permission this page </h4>
+					<h2>Oops! You can't Access this Page</h2>
+					<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+					<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">Go Back</a>
+				</div>
+			</div>
+        {% endif %}
+    {%else%}
+        <h1>Your Account is Deactive</h1>
+    {% endif %}
+<script>
+
+    $(".btnaction1").on('click', function(e) {
+
+        var val = $(this).val();
+        console.log(val);
+
+                 $('#subcrops_id').val(val);
+                  $('#syssubcrp_id').val(val);
+                document.getElementById("subcrops_id").value=val;
+                document.getElementById("syssubcrp_id").value=val;
+
+
+    });
+
+    $(".btnseeall").on('click', function(e) {
+       var val = $(this).val();
+
+
+       let image = document.getElementById('myimg')
+        fetch('/crop/'+ val).then(function(response){
+         response.json().then(function(data){
+            let imgHTML = '';
+            for(let getcrop of data.get_systemcrops){
+
+                var crop_name = getcrop.system_crop_name;
+                document.getElementById("cropname").innerHTML = crop_name;
+
+                var crop_scintific_name = getcrop.system_crop_sci_name;
+                document.getElementById("sciname").innerHTML = crop_scintific_name;
+
+                var crop_catgoery = getcrop.system_crop_catgoery;
+                document.getElementById("cropcatgoery").innerHTML = crop_catgoery;
+
+                var crop_growing_time = getcrop.system_crop_growing_time
+                document.getElementById("growingtime").innerHTML = crop_growing_time;
+
+                var crop_image = getcrop.system_crop_image
+                console.log(crop_image)
+                imgHTML += '<img src="/static/crop_images/'+crop_image+'" class="rounded" height="250">';
+                var created_at = getcrop.created_timestamp;
+                console.log(created_at);
+                document.getElementById("created_at").innerHTML = created_at;
+            }
+            image.innerHTML = imgHTML;
+         });
+        });
+       console.log(val);
+       let subcattblid =  document.getElementById("subcat")
+       fetch('/sub_crop/'+ val).then(function(response){
+            response.json().then(function(data){
+                let croptableHTML = '';
+                 for(let subcrop of data.get_system_sub_crops){
+                     croptableHTML+='<tr>';
+                     croptableHTML +='<td>'+subcrop.variety_name+'</td>';
+                     croptableHTML +='<td>'+subcrop.line_designation+'</td>';
+                     croptableHTML +='<td>'+subcrop.pedgiree+'</td>';
+                     croptableHTML +='<td>'+subcrop.origin+'</td>';
+                     croptableHTML +='<td>'+subcrop.method_of_propagation+'</td>';
+                     croptableHTML +='<td><button type="button" class="btn btn-danger" onclick="seecropFunction(this.value)" data-toggle="modal" data-target="#advancecropdetails" value="'+subcrop.id+'">'+'More'+'</button></td>';
+                     croptableHTML+='</tr>';
+                 }
+                 subcattblid.innerHTML = croptableHTML;
+                 $('#sub_crop').DataTable({
+                      destroy: true,
+                      "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                 });
+            });
+        });
+    });
+ function seecropFunction(val){
+
+    let sub_crop_image = document.getElementById('subcropimg')
+    fetch('/sub_crop_Detail/'+ val).then(function(response){
+         response.json().then(function(data){
+         let subcropImageHTML = '';
+          for(let sub_crop_detail of data.get_sys_sub_crop_details){
+                      var subcrop_id = sub_crop_detail.id;
+
+                      document.getElementById("yield-tab").setAttribute("data-value", subcrop_id);
+                      document.getElementById("farm_pestdisease_result-tab").setAttribute("data-value",syssubcrp_id );
+                      document.getElementById("syssubcrp_id").value=subcrop_id;
+                      var varaityName =  sub_crop_detail.variety_name;
+                      document.getElementById("varityname").innerHTML = varaityName;
+                      document.getElementById("tabheder").innerHTML = varaityName;
+                      var linedesignation  = sub_crop_detail.line_designation;
+                      document.getElementById("line_designation").innerHTML = linedesignation;
+                      var subpedgiree = sub_crop_detail.pedgiree;
+                      document.getElementById("pedgiree").innerHTML = subpedgiree;
+                      var syssub_origin = sub_crop_detail.origin;
+                      document.getElementById("origin").innerHTML = syssub_origin;
+                      var method_of_propagation = sub_crop_detail.method_of_propagation;
+                      document.getElementById("method_of_propagation").innerHTML = method_of_propagation;
+                      var sys_sub_crop_Img = sub_crop_detail.sub_crop_image;
+                      subcropImageHTML += '<img src="/static/crop_images/'+sys_sub_crop_Img+'" class="rounded" height="250">';
+                      var created_at = sub_crop_detail.created_timestamp;
+                      document.getElementById("inserttime").innerHTML = created_at;
+                    }
+                    sub_crop_image.innerHTML = subcropImageHTML;
+             });
+        });
+        fetch('/get_sys_sub_crop_yield/'+val).then(function(response){
+             response.json().then(function(data){
+                 let yiledHTML = '';
+                    for(let sys_sub_crop_yield of data.get_sys_sub_crop_yields){
+
+                           yiledHTML += '<div class="row">';
+                           yiledHTML += '<p class="font-weight-bold">'+'Highest Yield Record:- '+' </p>';
+                           yiledHTML += '<p>'+sys_sub_crop_yield.highest_yield_recorded +'</p>';
+                           yiledHTML += '</div>';
+
+                           yiledHTML += '<div class="row">';
+                           yiledHTML += '<p class="font-weight-bold">'+'Highest Yield :- '+' </p>';
+                           yiledHTML += '<p>'+sys_sub_crop_yield.average_yield +'</p>';
+                           yiledHTML += '</div>';
+                           yiledHTML += '<h6>'+'Optinal Detalis in Paddy Cultivation'+'</h6>';
+                           yiledHTML += '<div class="row">';
+                           yiledHTML += '<p class="font-weight-bold">'+'Average Yield Yala :- '+' </p>';
+                           yiledHTML += '<p>'+sys_sub_crop_yield.average_yield_yla +'</p>';
+                           yiledHTML += '</div>';
+                           yiledHTML += '<div class="row">';
+                           yiledHTML += '<p class="font-weight-bold">'+'Average Yield Maha :- '+' </p>';
+
+                           yiledHTML += '<p>'+sys_sub_crop_yield.average_yield_mha +'</p>';
+                           yiledHTML += '</div>';
+
+                           yiledHTML += '<div class="row">';
+                           yiledHTML += '<p class="font-weight-bold">'+'Reaction to Salinity :- '+' </p>';
+                           yiledHTML += '<p>'+sys_sub_crop_yield.reaction_to_salinity +'</p>';
+                           yiledHTML += '</div>';
+
+                           yiledHTML += '<div class="row">';
+                           yiledHTML += '<p class="font-weight-bold">'+'Created at:- '+' </p>';
+                           yiledHTML += '<p>'+sys_sub_crop_yield.created_timestamp +'</p>';
+                           yiledHTML += '</div>';
+
+                           }
+                            document.getElementById('yield').innerHTML = yiledHTML;
+                    });
+             });
+             fetch('/get_sys_sub_crop_maturity/'+ val).then(function(response){
+             response.json().then(function(data){
+             let maturityHTML = '';
+              for(let sub_yield_maturity of data.get_sys_sub_crop_maturitys){
+                            maturityHTML += '<div class="row">';
+                            maturityHTML += '<p class="font-weight-bold">'+sub_yield_maturity.seson_name +''+':-'+'</p>';
+                            maturityHTML += '<p>'+sub_yield_maturity.num_of_date +'</p>';
+                            maturityHTML += '</div>';
+
+                        }
+                       document.getElementById('maturity').innerHTML = maturityHTML;
+                 });
+            });
+
+            fetch('/get_sys_sub_crop_important_trait/'+ val).then(function(response){
+             response.json().then(function(data){
+             let importanttraitHTML = '';
+              for(let sub_crop_important_trait of data.get_sys_sub_crop_important_traits){
+                            importanttraitHTML += '<div class="row">';
+                            importanttraitHTML += '<p class="font-weight-bold">'+sub_crop_important_trait.traits_name +''+':-'+'</p>';
+                            importanttraitHTML += '<p>'+sub_crop_important_trait.traits_descreption +'</p>';
+                            importanttraitHTML += '</div>';
+
+                        }
+                       document.getElementById('importanttrait').innerHTML = importanttraitHTML;
+                 });
+            });
+
+            fetch('/get_sys_sub_crop_reaction_to_disease/'+ val).then(function(response){
+             response.json().then(function(data){
+             let reaction_to_disease_HTML = '';
+              for(let sub_crop_reaction_to_disease of data.get_sys_sub_crop_reaction_to_diseases){
+                            reaction_to_disease_HTML += '<div class="row">';
+                                 reaction_to_disease_HTML += '<p class="font-weight-bold">'+sub_crop_reaction_to_disease.diseasese_name+''+':-'+'</p>';
+                            if(sub_crop_reaction_to_disease.resistant==null)
+                            {
+                                reaction_to_disease_HTML += '<p>'+''+'</p>';
+                            }
+                            else if(sub_crop_reaction_to_disease.resistant==false)
+                            {
+                               reaction_to_disease_HTML += '<p class="resistant">'+'No Resistant'+'</p>';
+                            }
+                            else{
+                             reaction_to_disease_HTML += '<p class="ok">'+'Resistant'+'</p>';
+                            }
+
+                            if(sub_crop_reaction_to_disease.moderately_resistant==null)
+                            {
+                                 reaction_to_disease_HTML += '<p>'+''+'</p>';
+                            }
+
+                            else if(sub_crop_reaction_to_disease.moderately_resistant==false)
+                            {
+                                reaction_to_disease_HTML += '<p>'+'No Moderately Resistant'+'</p>';
+                            }
+                            else
+                            {
+                                 reaction_to_disease_HTML += '<p class="ok">'+'Moderately Resistant'+'</p>';
+                            }
+
+                            if(sub_crop_reaction_to_disease.susceptible==null)
+                            {
+                                reaction_to_disease_HTML += '<p>'+''+'</p>';
+                            }
+                            else if(sub_crop_reaction_to_disease.susceptible==false)
+                            {
+                                reaction_to_disease_HTML += '<p>'+'No Subceptible'+'</p>';
+                            }
+                            else{
+                                 reaction_to_disease_HTML += '<p class="ok">'+'Subceptible'+'</p>';
+                            }
+
+
+                            if(sub_crop_reaction_to_disease.moderately_susceptible==null)
+                            {
+                                reaction_to_disease_HTML += '<p>'+''+'</p>';
+                            }
+                            else if(sub_crop_reaction_to_disease.moderately_susceptible==false)
+                            {
+                                reaction_to_disease_HTML += '<p>'+'No Moderately Subceptible'+'</p>';
+                            }
+                            else{
+                                reaction_to_disease_HTML += '<p class="ok">'+'Moderately Subceptible'+'</p>';
+                            }
+                            reaction_to_disease_HTML += '</div>';
+
+                        }
+                       document.getElementById('reactiondisease').innerHTML = reaction_to_disease_HTML;
+
+                 });
+            });
+
+         fetch('/get_sys_sub_crop_reaction_to_insect_pest/'+ val).then(function(response){
+         response.json().then(function(data){
+         let reaction_to_pest_HTML = '';
+          for(let sys_sub_crop_reaction_to_insect_pest of data.get_sys_sub_crop_reaction_to_insect_pests){
+                    reaction_to_pest_HTML += '<div class="row">';
+                                 reaction_to_pest_HTML += '<p class="font-weight-bold">'+sys_sub_crop_reaction_to_insect_pest.diseasese_name+''+':-'+'</p>';
+                            if(sys_sub_crop_reaction_to_insect_pest.resistant==null)
+                            {
+                                reaction_to_pest_HTML += '<p>'+''+'<p>';
+                            }
+                            else if(sys_sub_crop_reaction_to_insect_pest.resistant==false)
+                            {
+                               reaction_to_pest_HTML += '<p class="resistant">'+'No Resistant'+'</p>';
+                            }
+                            else{
+                             reaction_to_pest_HTML += '<p class="ok">'+'Resistant'+'</p>';
+                            }
+
+                            if(sys_sub_crop_reaction_to_insect_pest.moderately_resistant==null)
+                            {
+                                 reaction_to_pest_HTML += '<p>'+''+'</p>';
+                            }
+
+                            else if(sys_sub_crop_reaction_to_insect_pest.moderately_resistant==false)
+                            {
+                                reaction_to_pest_HTML += '<p>'+'No Moderately Resistant'+'</p>';
+                            }
+                            else
+                            {
+                                 reaction_to_pest_HTML += '<p class="ok">'+'Moderately Resistant'+'</p>';
+                            }
+
+                            if(sys_sub_crop_reaction_to_insect_pest.susceptible==null)
+                            {
+                                reaction_to_pest_HTML += '<p>'+''+'</p>';
+                            }
+                            else if(sys_sub_crop_reaction_to_insect_pest.susceptible==false)
+                            {
+                                reaction_to_pest_HTML += '<p>'+'No Subceptible'+'</p>';
+                            }
+                            else{
+                                 reaction_to_pest_HTML += '<p class="ok">'+'Subceptible'+'</p>';
+                            }
+
+
+                            if(sys_sub_crop_reaction_to_insect_pest.moderately_susceptible==null)
+                            {
+                                reaction_to_pest_HTML += '<p>'+''+'</p>';
+                            }
+                            else if(sys_sub_crop_reaction_to_insect_pest.moderately_susceptible==false)
+                            {
+                                reaction_to_pest_HTML += '<p>'+'No Moderately Subceptible'+'</p>';
+                            }
+                            else{
+                                reaction_to_pest_HTML += '<p class="ok">'+'Moderately Subceptible'+'</p>';
+                            }
+                            reaction_to_pest_HTML += '</div>';
+
+                    }
+                    document.getElementById('pest').innerHTML = reaction_to_pest_HTML;
+
+
+             });
+        });
+        fetch('/get_sys_sub_crop_qulity_characteristic/'+ val).then(function(response){
+                 response.json().then(function(data){
+                 let qulityHTML = '';
+                 console.log(val);
+                  for(let get_sys_sub_crop_qulity_characteristic of data.get_sys_sub_crop_qulity_characteristics){
+                    console.log(data);
+                                qulityHTML += '<div class="row">';
+                                qulityHTML += '<p class="font-weight-bold">'+get_sys_sub_crop_qulity_characteristic.characteristic_name +''+':-'+'</p>';
+                                qulityHTML += '<p>'+get_sys_sub_crop_qulity_characteristic.characteristic_descreption +'</p>';
+                                qulityHTML += '</div>';
+                            }
+                            document.getElementById('qulityinfo').innerHTML = qulityHTML;
+
+                     });
+        });
+ }
+ let crop_select = document.getElementById('crops')
+ let sub_crop_select =  document.getElementById('subcrops')
+ crop_select.onchange = function(){
+    subcrops = crop_select.value;
+    if(subcrops=="Please Select")
+    {
+    fetch('/get_select_crop/'+ 1).then(function(response){
+         response.json().then(function(data){
+         let optionHTML = '';
+          for(let get_select_crop of data.get_select_crops){
+
+                        optionHTML += '<option value="'+get_select_crop.id+'">' +get_select_crop.variety_name+ '</option>';
+                    }
+                   sub_crop_select.innerHTML = optionHTML;
+
+             });
+        });
+
+    }
+    else{
+    fetch('/get_select_crop/'+ subcrops).then(function(response){
+         response.json().then(function(data){
+         let optionHTML = '';
+          for(let get_select_crop of data.get_select_crops){
+
+                        optionHTML += '<option value="'+get_select_crop.id+'">' +get_select_crop.variety_name+ '</option>';
+                    }
+                   sub_crop_select.innerHTML = optionHTML;
+
+             });
+        });
+      }
+ }
+function see_my_farm_crop_detail_Function(val){
+console.log(val);
+    let crp_sub_crop_image = document.getElementById('crpsubcropimg')
+    fetch('/crp_sub_crop_Detail/'+val).then(function(response){
+         response.json().then(function(data){
+         let crp_subcropImageHTML = '';
+          for(let sub_crop_detail of data.get_sys_sub_crop_details){
+                      var subcrop_id = sub_crop_detail.id;
+                      var crp_varaityName =  sub_crop_detail.variety_name;
+                      document.getElementById("crp_varityname").innerHTML = crp_varaityName;
+                      var crp_linedesignation  = sub_crop_detail.line_designation;
+                      document.getElementById("crp_line_designation").innerHTML = crp_linedesignation;
+                      var crp_subpedgiree = sub_crop_detail.pedgiree;
+                      document.getElementById("crp_pedgiree").innerHTML = crp_subpedgiree;
+                      var crp_syssub_origin = sub_crop_detail.origin;
+                      document.getElementById("crp_origin").innerHTML = crp_syssub_origin;
+                      var crp_method_of_propagation = sub_crop_detail.method_of_propagation;
+                      document.getElementById("crp_method_of_propagation").innerHTML = crp_method_of_propagation;
+                      var crp_sys_sub_crop_Img = sub_crop_detail.sub_crop_image;
+                      crp_subcropImageHTML += '<img src="/static/crop_images/'+crp_sys_sub_crop_Img+'" class="rounded" height="250">';
+                      var crp_created_at = sub_crop_detail.created_timestamp;
+                      document.getElementById("crp_inserttime").innerHTML = crp_created_at;
+                    }
+                   crp_sub_crop_image.innerHTML = crp_subcropImageHTML;
+             });
+        });
+
+
+        fetch('/get_sys_sub_crop_yield/'+val).then(function(response){
+             response.json().then(function(data){
+                 let crp_yiledHTML = '';
+                    for(let sys_sub_crop_yield of data.get_sys_sub_crop_yields){
+
+                           crp_yiledHTML += '<div class="row">';
+                           crp_yiledHTML += '<p class="font-weight-bold">'+'Highest Yield Record:- '+' </p>';
+                           crp_yiledHTML += '<p>'+sys_sub_crop_yield.highest_yield_recorded +'</p>';
+                           crp_yiledHTML += '</div>';
+
+                           crp_yiledHTML += '<div class="row">';
+                           crp_yiledHTML += '<p class="font-weight-bold">'+'Highest Yield :- '+' </p>';
+                           crp_yiledHTML += '<p>'+sys_sub_crop_yield.average_yield +'</p>';
+                           crp_yiledHTML += '</div>';
+                           crp_yiledHTML += '<h6>'+'Optinal Detalis in Paddy Cultivation'+'</h6>';
+                           crp_yiledHTML += '<div class="row">';
+                           crp_yiledHTML += '<p class="font-weight-bold">'+'Average Yield Yala :- '+' </p>';
+                           crp_yiledHTML += '<p>'+sys_sub_crop_yield.average_yield_yla +'</p>';
+                           crp_yiledHTML += '</div>';
+                           crp_yiledHTML += '<div class="row">';
+                           crp_yiledHTML += '<p class="font-weight-bold">'+'Average Yield Maha :- '+' </p>';
+
+                           crp_yiledHTML += '<p>'+sys_sub_crop_yield.average_yield_mha +'</p>';
+                           crp_yiledHTML += '</div>';
+
+                           crp_yiledHTML += '<div class="row">';
+                           crp_yiledHTML += '<p class="font-weight-bold">'+'Reaction to Salinity :- '+' </p>';
+                           crp_yiledHTML += '<p>'+sys_sub_crop_yield.reaction_to_salinity +'</p>';
+                           crp_yiledHTML += '</div>';
+
+                           crp_yiledHTML += '<div class="row">';
+                           crp_yiledHTML += '<p class="font-weight-bold">'+'Created at:- '+' </p>';
+                           crp_yiledHTML += '<p>'+sys_sub_crop_yield.created_timestamp +'</p>';
+                           crp_yiledHTML += '</div>';
+
+                           }
+                            document.getElementById('crpyield').innerHTML = crp_yiledHTML;
+                    });
+             });
+             fetch('/get_sys_sub_crop_maturity/'+ val).then(function(response){
+             response.json().then(function(data){
+             let crp_maturityHTML = '';
+              for(let sub_yield_maturity of data.get_sys_sub_crop_maturitys){
+                            crp_maturityHTML += '<div class="row">';
+                            crp_maturityHTML += '<p class="font-weight-bold">'+sub_yield_maturity.seson_name +''+':-'+'</p>';
+                            crp_maturityHTML += '<p>'+sub_yield_maturity.num_of_date +'</p>';
+                            crp_maturityHTML += '</div>';
+
+                        }
+                       document.getElementById('crpmaturity').innerHTML = crp_maturityHTML;
+                 });
+            });
+             fetch('/get_sys_sub_crop_important_trait/'+ val).then(function(response){
+             response.json().then(function(data){
+             let crp_importanttraitHTML = '';
+              for(let sub_crop_important_trait of data.get_sys_sub_crop_important_traits){
+                            crp_importanttraitHTML += '<div class="row">';
+                            crp_importanttraitHTML += '<p class="font-weight-bold">'+sub_crop_important_trait.traits_name +''+':-'+'</p>';
+                            crp_importanttraitHTML += '<p>'+sub_crop_important_trait.traits_descreption +'</p>';
+                            crp_importanttraitHTML += '</div>';
+
+                        }
+                       document.getElementById('crpimportanttrait').innerHTML = crp_importanttraitHTML;
+                 });
+            });
+                fetch('/get_sys_sub_crop_reaction_to_disease/'+ val).then(function(response){
+             response.json().then(function(data){
+             let crp_reaction_to_disease_HTML = '';
+              for(let sub_crop_reaction_to_disease of data.get_sys_sub_crop_reaction_to_diseases){
+                            crp_reaction_to_disease_HTML += '<div class="row">';
+                                 crp_reaction_to_disease_HTML += '<p class="font-weight-bold">'+sub_crop_reaction_to_disease.diseasese_name+''+':-'+'</p>';
+                            if(sub_crop_reaction_to_disease.resistant==null)
+                            {
+                                crp_reaction_to_disease_HTML += '<p>'+''+'</p>';
+                            }
+                            else if(sub_crop_reaction_to_disease.resistant==false)
+                            {
+                               crp_reaction_to_disease_HTML += '<p class="resistant">'+'No Resistant'+'</p>';
+                            }
+                            else{
+                             crp_reaction_to_disease_HTML += '<p class="ok">'+'Resistant'+'</p>';
+                            }
+
+                            if(sub_crop_reaction_to_disease.moderately_resistant==null)
+                            {
+                                 crp_reaction_to_disease_HTML += '<p>'+''+'</p>';
+                            }
+
+                            else if(sub_crop_reaction_to_disease.moderately_resistant==false)
+                            {
+                                crp_reaction_to_disease_HTML += '<p>'+'No Moderately Resistant'+'</p>';
+                            }
+                            else
+                            {
+                                 crp_reaction_to_disease_HTML += '<p class="ok">'+'Moderately Resistant'+'</p>';
+                            }
+
+                            if(sub_crop_reaction_to_disease.susceptible==null)
+                            {
+                                crp_reaction_to_disease_HTML += '<p>'+''+'</p>';
+                            }
+                            else if(sub_crop_reaction_to_disease.susceptible==false)
+                            {
+                                crp_reaction_to_disease_HTML += '<p>'+'No Subceptible'+'</p>';
+                            }
+                            else{
+                                 crp_reaction_to_disease_HTML += '<p class="ok">'+'Subceptible'+'</p>';
+                            }
+
+
+                            if(sub_crop_reaction_to_disease.moderately_susceptible==null)
+                            {
+                                crp_reaction_to_disease_HTML += '<p>'+''+'</p>';
+                            }
+                            else if(sub_crop_reaction_to_disease.moderately_susceptible==false)
+                            {
+                                crp_reaction_to_disease_HTML += '<p>'+'No Moderately Subceptible'+'</p>';
+                            }
+                            else{
+                                crp_reaction_to_disease_HTML += '<p class="ok">'+'Moderately Subceptible'+'</p>';
+                            }
+                            crp_reaction_to_disease_HTML += '</div>';
+
+                        }
+                       document.getElementById('crpreactiondisease').innerHTML = crp_reaction_to_disease_HTML;
+
+                 });
+            });
+                     fetch('/get_sys_sub_crop_reaction_to_insect_pest/'+ val).then(function(response){
+         response.json().then(function(data){
+         let crp_reaction_to_pest_HTML = '';
+          for(let sys_sub_crop_reaction_to_insect_pest of data.get_sys_sub_crop_reaction_to_insect_pests){
+                    crp_reaction_to_pest_HTML += '<div class="row">';
+                                 crp_reaction_to_pest_HTML += '<p class="font-weight-bold">'+sys_sub_crop_reaction_to_insect_pest.diseasese_name+''+':-'+'</p>';
+                            if(sys_sub_crop_reaction_to_insect_pest.resistant==null)
+                            {
+                                crp_reaction_to_pest_HTML += '<p>'+''+'<p>';
+                            }
+                            else if(sys_sub_crop_reaction_to_insect_pest.resistant==false)
+                            {
+                               crp_reaction_to_pest_HTML += '<p class="resistant">'+'No Resistant'+'</p>';
+                            }
+                            else{
+                             crp_reaction_to_pest_HTML += '<p class="ok">'+'Resistant'+'</p>';
+                            }
+
+                            if(sys_sub_crop_reaction_to_insect_pest.moderately_resistant==null)
+                            {
+                                 crp_reaction_to_pest_HTML += '<p>'+''+'</p>';
+                            }
+
+                            else if(sys_sub_crop_reaction_to_insect_pest.moderately_resistant==false)
+                            {
+                                crp_reaction_to_pest_HTML += '<p>'+'No Moderately Resistant'+'</p>';
+                            }
+                            else
+                            {
+                                 crp_reaction_to_pest_HTML += '<p class="ok">'+'Moderately Resistant'+'</p>';
+                            }
+
+                            if(sys_sub_crop_reaction_to_insect_pest.susceptible==null)
+                            {
+                                crp_reaction_to_pest_HTML += '<p>'+''+'</p>';
+                            }
+                            else if(sys_sub_crop_reaction_to_insect_pest.susceptible==false)
+                            {
+                                crp_reaction_to_pest_HTML += '<p>'+'No Subceptible'+'</p>';
+                            }
+                            else{
+                                 crp_reaction_to_pest_HTML += '<p class="ok">'+'Subceptible'+'</p>';
+                            }
+
+
+                            if(sys_sub_crop_reaction_to_insect_pest.moderately_susceptible==null)
+                            {
+                                crp_reaction_to_pest_HTML += '<p>'+''+'</p>';
+                            }
+                            else if(sys_sub_crop_reaction_to_insect_pest.moderately_susceptible==false)
+                            {
+                                crp_reaction_to_pest_HTML += '<p>'+'No Moderately Subceptible'+'</p>';
+                            }
+                            else{
+                                crp_reaction_to_pest_HTML += '<p class="ok">'+'Moderately Subceptible'+'</p>';
+                            }
+                            crp_reaction_to_pest_HTML += '</div>';
+
+                    }
+                    document.getElementById('crppest').innerHTML = crp_reaction_to_pest_HTML;
+
+
+             });
+        });
+        fetch('/get_sys_sub_crop_qulity_characteristic/'+ val).then(function(response){
+                 response.json().then(function(data){
+                 let crp_qulityHTML = '';
+                 console.log(val);
+                  for(let get_sys_sub_crop_qulity_characteristic of data.get_sys_sub_crop_qulity_characteristics){
+                    console.log(data);
+                                crp_qulityHTML += '<div class="row">';
+                                crp_qulityHTML += '<p class="font-weight-bold">'+get_sys_sub_crop_qulity_characteristic.characteristic_name +''+':-'+'</p>';
+                                crp_qulityHTML += '<p>'+get_sys_sub_crop_qulity_characteristic.characteristic_descreption +'</p>';
+                                crp_qulityHTML += '</div>';
+                            }
+                            document.getElementById('crpqulityinfo').innerHTML = crp_qulityHTML;
+
+                     });
+        });
+
+}
+
+function see_my_farm_crop_manage_Function(val){
+
+console.log(val)
+
+       let con_production_mha =  document.getElementById("con_production_mha")
+       fetch('/conventiol_production_fertilizer_plan/'+ val).then(function(response){
+            response.json().then(function(data){
+                let cropfertilizer_con_product_mha_tableHTML = '';
+                 for(let get_conventional_production_fertilizer_paln of data.get_conventional_production_fertilizer_palns){
+                     cropfertilizer_con_product_mha_tableHTML+='<tr>';
+                     cropfertilizer_con_product_mha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.sys_crop_category_name+'</td>';
+                     cropfertilizer_con_product_mha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.crop_age_range+'</td>';
+                     cropfertilizer_con_product_mha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_need_time_name+'</td>';
+                     cropfertilizer_con_product_mha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_name+'</td>';
+                     cropfertilizer_con_product_mha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_amount+'</td>';
+                     cropfertilizer_con_product_mha_tableHTML+='</tr>';
+                 }
+                 con_production_mha.innerHTML = cropfertilizer_con_product_mha_tableHTML;
+                 $('#crp_fertilizer_con_production_mha').DataTable({
+                      destroy: true,
+                      "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                 });
+            });
+        });
+
+        let con_production_yla =  document.getElementById("con_production_yala")
+       fetch('/conventiol_production_fertilizer_plan_yla/'+ val).then(function(response){
+            response.json().then(function(data){
+                let cropfertilizer_con_product_yla_tableHTML = '';
+                 for(let get_conventional_production_fertilizer_paln of data.get_conventional_production_fertilizer_palns){
+                     cropfertilizer_con_product_yla_tableHTML+='<tr>';
+                     cropfertilizer_con_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.sys_crop_category_name+'</td>';
+                     cropfertilizer_con_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.crop_age_range+'</td>';
+                     cropfertilizer_con_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_need_time_name+'</td>';
+                     cropfertilizer_con_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_name+'</td>';
+                     cropfertilizer_con_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_amount+'</td>';
+                     cropfertilizer_con_product_yla_tableHTML+='</tr>';
+                 }
+                 con_production_yala.innerHTML = cropfertilizer_con_product_yla_tableHTML;
+                 $('#crp_fertilizer_con_production_yala').DataTable({
+                      destroy: true,
+                      "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                 });
+            });
+        });
+         let organic_production_mha =  document.getElementById("con_production_organic_mha")
+        fetch('/organic_production_fertilizer_plan_mha/'+ val).then(function(response){
+            response.json().then(function(data){
+                let cropfertilizer_organic_product_maha_tableHTML = '';
+                 for(let get_conventional_production_fertilizer_paln of data.get_conventional_production_fertilizer_palns){
+                     cropfertilizer_organic_product_maha_tableHTML+='<tr>';
+                     cropfertilizer_organic_product_maha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.sys_crop_category_name+'</td>';
+                     cropfertilizer_organic_product_maha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.crop_age_range+'</td>';
+                     cropfertilizer_organic_product_maha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_need_time_name+'</td>';
+                     cropfertilizer_organic_product_maha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_name+'</td>';
+                     cropfertilizer_organic_product_maha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_amount+'</td>';
+                     cropfertilizer_organic_product_maha_tableHTML+='</tr>';
+                 }
+                 organic_production_mha.innerHTML = cropfertilizer_organic_product_maha_tableHTML;
+                 $('#crp_fertilizer_organic_production_mha').DataTable({
+                      destroy: true,
+                      "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                 });
+            });
+        });
+
+         let organic_production_yla =  document.getElementById("organic_production_yala")
+        fetch('/organic_production_fertilizer_plan_yala/'+ val).then(function(response){
+            response.json().then(function(data){
+                let cropfertilizer_organic_product_yla_tableHTML = '';
+                 for(let get_conventional_production_fertilizer_paln of data.get_conventional_production_fertilizer_palns){
+                     cropfertilizer_organic_product_yla_tableHTML+='<tr>';
+                     cropfertilizer_organic_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.sys_crop_category_name+'</td>';
+                     cropfertilizer_organic_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.crop_age_range+'</td>';
+                     cropfertilizer_organic_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_need_time_name+'</td>';
+                     cropfertilizer_organic_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_name+'</td>';
+                     cropfertilizer_organic_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_amount+'</td>';
+                     cropfertilizer_organic_product_yla_tableHTML+='</tr>';
+                 }
+                 organic_production_yla.innerHTML = cropfertilizer_organic_product_yla_tableHTML;
+                 $('#crp_fertilizer_organic_production_yala').DataTable({
+                      destroy: true,
+                      "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                 });
+            });
+        });
+
+        let intergratedproduction_mha =  document.getElementById("con_production_intergrated_mha")
+        fetch('/intergrated_production_fertilizer_plan_mha/'+ val).then(function(response){
+            response.json().then(function(data){
+                let cropfertilizer_intergrated_product_mha_tableHTML = '';
+                 for(let get_conventional_production_fertilizer_paln of data.get_conventional_production_fertilizer_palns){
+                     cropfertilizer_intergrated_product_mha_tableHTML +='<tr>';
+                     cropfertilizer_intergrated_product_mha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.sys_crop_category_name+'</td>';
+                     cropfertilizer_intergrated_product_mha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.crop_age_range+'</td>';
+                     cropfertilizer_intergrated_product_mha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_need_time_name+'</td>';
+                     cropfertilizer_intergrated_product_mha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_name+'</td>';
+                     cropfertilizer_intergrated_product_mha_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_amount+'</td>';
+                     cropfertilizer_intergrated_product_mha_tableHTML+='</tr>';
+                 }
+                 intergratedproduction_mha .innerHTML = cropfertilizer_intergrated_product_mha_tableHTML;
+                 $('#crp_fertilizer_intergrated_production_mha').DataTable({
+                      destroy: true,
+                      "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                 });
+            });
+        });
+
+        let intergratedproduction_yla =  document.getElementById("organic_intergrated_yala")
+        fetch('/intergrated_production_fertilizer_plan_yala/'+ val).then(function(response){
+            response.json().then(function(data){
+                let cropfertilizer_intergrated_product_yla_tableHTML = '';
+                 for(let get_conventional_production_fertilizer_paln of data.get_conventional_production_fertilizer_palns){
+                     cropfertilizer_intergrated_product_yla_tableHTML +='<tr>';
+                     cropfertilizer_intergrated_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.sys_crop_category_name+'</td>';
+                     cropfertilizer_intergrated_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.crop_age_range+'</td>';
+                     cropfertilizer_intergrated_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_need_time_name+'</td>';
+                     cropfertilizer_intergrated_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_name+'</td>';
+                     cropfertilizer_intergrated_product_yla_tableHTML +='<td>'+get_conventional_production_fertilizer_paln.fertilizer_amount+'</td>';
+                     cropfertilizer_intergrated_product_yla_tableHTML+='</tr>';
+                 }
+                 intergratedproduction_yla .innerHTML = cropfertilizer_intergrated_product_yla_tableHTML;
+                 $('#crp_fertilizer_intergrated_production_yala').DataTable({
+                      destroy: true,
+                      "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                 });
+            });
+        });
+        let fertli_result_varity = document.getElementById('frtilizerresultvarity')
+        fetch('/get_system_fertilizer_result_crp/'+ val).then(function(response){
+         response.json().then(function(data){
+         let crpfertilizerHTML = '';
+          for(let sub_crop_detail of data.get_sys_sub_crop_details){
+                        crpfertilizerHTML += '<option value="'+sub_crop_detail.id+'">' +sub_crop_detail.variety_name+ '</option>';
+                    }
+                   fertli_result_varity.innerHTML = crpfertilizerHTML;
+
+             });
+        });
+
+        let pest_and_diseas_varity = document.getElementById('pest_and_diseas_varity')
+        fetch('/get_system_fertilizer_result_crp/'+ val).then(function(response){
+         response.json().then(function(data){
+         let pest_and_diseas_varityHTML = '';
+          for(let sub_crop_detail of data.get_sys_sub_crop_details){
+                        pest_and_diseas_varityHTML += '<option value="'+sub_crop_detail.id+'">' +sub_crop_detail.variety_name+ '</option>';
+                    }
+                   pest_and_diseas_varity.innerHTML = pest_and_diseas_varityHTML;
+
+             });
+        });
+
+
+        let fertilizerinfo = document.getElementById('crop_all_fertilzers')
+        fetch('/get_system_fertilizer_to_sumit_result/').then(function(response){
+         response.json().then(function(data){
+         let crpfertilizerdetailsHTML = '';
+          for(let systemcommonfertilizerplan of data.systemcommonfertilizerplans){
+                        crpfertilizerdetailsHTML += '<option value="'+systemcommonfertilizerplan.id+'">' +systemcommonfertilizerplan.fertilizer_name+ '</option>';
+                    }
+                   fertilizerinfo.innerHTML = crpfertilizerdetailsHTML;
+
+             });
+        });
+            fetch('/get_system_crp_diseases_details/'+val).then(function(response){
+                 response.json().then(function(data){
+                     var temp ="";
+			             for(let get_system_crp_diseases_detail of data.get_system_crp_diseases_details){
+                           temp +="<tr>";
+                                temp +="<td>"+get_system_crp_diseases_detail.diseasese_name+"</td>";
+                                temp +="<td>"+get_system_crp_diseases_detail.syssubcategory_name+"</td>";
+                                if(get_system_crp_diseases_detail.resistant==null){
+								    temp +='<td>'+'.........'+'</td>';
+								}
+		     					else if(get_system_crp_diseases_detail.resistant==false){
+									temp +='<td>'+'ප්‍රතිරෝධයක් නැත'+'</td>';
+								}
+								else{
+									temp +='<td>'+'ප්‍රතිරෝධි'+'</td>';
+	    						}
+
+								if(get_system_crp_diseases_detail.moderately_resistant==null){
+									temp +='<td>'+'.........'+'</td>';
+								}
+								else if(get_system_crp_diseases_detail.moderately_resistant==false){
+									temp +='<td>'+'සවල්ප වශයෙන් හෝ ප්‍රතිරෝධයක් නොදක්වයි'+'</td>';
+								}
+								else{
+									temp +='<td>'+'තරමක් ප්‍රතිරෝධයක් දක්වයි'+'</td>';
+								}
+
+								if(get_system_crp_diseases_detail.susceptible==null){
+									temp +='<td>'+'.........'+'</td>';
+								}
+								else if(get_system_crp_diseases_detail.susceptible==false){
+									temp +='<td>'+'රොගයට යටත් නොවේ'+'</td>';
+								}
+								else{
+									temp +='<td>'+'රෝගයට යටත් වේ'+'</td>';
+								}
+
+								if(get_system_crp_diseases_detail.moderately_susceptible==null){
+									temp +='<td>'+'.........'+'</td>';
+								}
+								else if(get_system_crp_diseases_detail.moderately_susceptible==false){
+									temp +='<td>'+' රෝගයට තරමක්  යටත් නොවේ'+'</td>';
+								}
+								else{
+									temp +='<td>'+'රෝගයට තරමක් යටත් වේ'+'</td>';
+								}
+								temp +='<td><button type="button" class="btn btn-info btn-sm" onclick="seediseaseFunction(this.value)" data-toggle="modal" data-target="#crpdiseas" value="'+get_system_crp_diseases_detail.system_pest_and_diseases_id+'">'+'More Details'+'</button></td>';;
+                           temp +="</tr>";
+
+                         }
+                         document.getElementById("getdiseasdetails").innerHTML = temp;
+
+                          $('#farm_diseases_details').DataTable({
+                               destroy: true,
+                               "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                         });
+                 });
+            });
+
+            fetch('/get_system_crp_pest_details/'+val).then(function(response){
+                 response.json().then(function(data){
+                     var temp ="";
+			             for(let get_system_crp_pest_detail of data.get_system_crp_pest_details){
+                           temp +="<tr>";
+                                temp +="<td>"+get_system_crp_pest_detail.diseasese_name+"</td>";
+                                temp +="<td>"+get_system_crp_pest_detail.syssubcategory_name+"</td>";
+                                if(get_system_crp_pest_detail.resistant==null){
+								    temp +='<td>'+'.........'+'</td>';
+								}
+		     					else if(get_system_crp_pest_detail.resistant==false){
+									temp +='<td>'+'ප්‍රතිරෝධයක් නැත'+'</td>';
+								}
+								else{
+									temp +='<td>'+'ප්‍රතිරෝධි'+'</td>';
+	    						}
+
+								if(get_system_crp_pest_detail.moderately_resistant==null){
+									temp +='<td>'+'.........'+'</td>';
+								}
+								else if(get_system_crp_pest_detail.moderately_resistant==false){
+									temp +='<td>'+'සවල්ප වශයෙන් හෝ ප්‍රතිරෝධයක් නොදක්වයි'+'</td>';
+								}
+								else{
+									temp +='<td>'+'තරමක් ප්‍රතිරෝධයක් දක්වයි'+'</td>';
+								}
+
+								if(get_system_crp_pest_detail.susceptible==null){
+									temp +='<td>'+'.........'+'</td>';
+								}
+								else if(get_system_crp_pest_detail.susceptible==false){
+									temp +='<td>'+'රොගයට යටත් නොවේ'+'</td>';
+								}
+								else{
+									temp +='<td>'+'රෝගයට යටත් වේ'+'</td>';
+								}
+
+								if(get_system_crp_pest_detail.moderately_susceptible==null){
+									temp +='<td>'+'.........'+'</td>';
+								}
+								else if(get_system_crp_pest_detail.moderately_susceptible==false){
+									temp +='<td>'+' රෝගයට තරමක්  යටත් නොවේ'+'</td>';
+								}
+								else{
+									temp +='<td>'+'රෝගයට තරමක් යටත් වේ'+'</td>';
+								}
+								temp +='<td><button type="button" class="btn btn-info btn-sm" onclick="seediseaseFunction(this.value)" data-toggle="modal" data-target="#crpdiseas" value="'+get_system_crp_pest_detail.system_pest_and_diseases_id+'">'+'More Details'+'</button></td>';
+                           temp +="</tr>";
+
+                         }
+                         document.getElementById("getpestdetails").innerHTML = temp;
+
+                          $('#farm_pest_details').DataTable({
+                               destroy: true,
+                               "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                         });
+                 });
+            });
+
+
+
+
+}
+
+function seediseaseFunction(val){
+console.log(val);
+let image = document.getElementById('threat_images')
+        fetch('/system_pest_and_diseases/'+ val).then(function(response){
+         response.json().then(function(data){
+            let imgHTML = '';
+            for(let system_pest_and_disease of data.system_pest_and_diseases){
+
+                var threat_name = system_pest_and_disease.threat_name;
+                document.getElementById("threat_name").innerHTML = threat_name;
+
+                var threat_sci_name = system_pest_and_disease.threat_sci_name;
+                document.getElementById("threat_sci_name").innerHTML = threat_sci_name;
+
+                var threat_type = system_pest_and_disease.threat_type;
+                if(threat_type==1)
+                {
+                    document.getElementById("threat_type").innerHTML = "කෘමින්";
+                }
+                else if(threat_type==2)
+                {
+                     document.getElementById("threat_type").innerHTML = "වයිරස්";
+                }
+                else if(threat_type==3)
+                {
+                     document.getElementById("threat_type").innerHTML = "දිලිර";
+                }
+                else if(threat_type==4)
+                {
+                     document.getElementById("threat_type").innerHTML = "බැක්ටීරියා";
+                }
+                else if(threat_type==5)
+                {
+                     document.getElementById("threat_type").innerHTML = "වල් පෑලැටි";
+                }
+                else
+                {
+                     document.getElementById("threat_type").innerHTML = "වෙනත්";
+                }
+
+                var disease_name = system_pest_and_disease.disease_name;
+                document.getElementById("disease_name").innerHTML = disease_name;
+
+                var threat_image = system_pest_and_disease.threat_image;
+                imgHTML += '<img src="/static/pest_and_desiseas/'+threat_image+'" class="rounded" height="250">';
+                var created_timestamp = system_pest_and_disease.created_timestamp;
+                console.log(created_timestamp);
+                document.getElementById("timestamp").innerHTML = created_timestamp;
+
+                var disease_symptoms = system_pest_and_disease.disease_symptoms;
+                document.getElementById("disease_symptoms").innerHTML = disease_symptoms;
+
+                var disease_causes = system_pest_and_disease.disease_causes;
+                document.getElementById("disease_causes").innerHTML = disease_causes;
+
+                var disease_discreption = system_pest_and_disease.disease_discreption;
+                document.getElementById("disease_discreption").innerHTML = disease_discreption;
+
+
+            }
+            image.innerHTML = imgHTML;
+         });
+        });
+        fetch('/system_pest_and_diseases_solutions/'+val).then(function(response){
+           response.json().then(function(data){
+           var tempHTML ="";
+			    for(let system_pest_and_diseases_solution of data.system_pest_and_diseases_solution){
+
+                       tempHTML +="<tr>";
+                           tempHTML +="<td>"+system_pest_and_diseases_solution.pest_or_diseas_name+"</td>";
+
+                            			  if(system_pest_and_diseases_solution.threatment_type==1)
+                           {
+								tempHTML +="<td>"+'රසායනික පාලනය'+"</td>";
+                           }
+                           else if(system_pest_and_diseases_solution.threatment_type==2)
+                           {
+								tempHTML +="<td>"+'එකා බද්ධ පාලනය'+"</td>";
+                           }
+                           else if(system_pest_and_diseases_solution.threatment_type==3)
+                           {
+									tempHTML +="<td>"+'ජිව විද්‍යාත්මක පාලනය'+"</td>";
+                           }
+                           else if(system_pest_and_diseases_solution.threatment_type==4)
+                           {
+								tempHTML +="<td>"+'වෙනත්' +"</td>";
+                           }
+                           else if(system_pest_and_diseases_solution.threatment_type==5)
+                           {
+								tempHTML +="<td>"+'ප්‍රතිරෝදී ප්‍රබේද මගින් පාලනය'+"</td>";
+                           }
+                           else if(system_pest_and_diseases_solution.threatment_type==6)
+                           {
+								tempHTML +="<td>"+'පොහොර මගින් පාලනය' +"</td>";
+                           }
+                           else if(system_pest_and_diseases_solution.threatment_type==7)
+                           {
+								tempHTML +="<td>"+'ජලය මගින් පාලනය' +"</td>";
+                           }
+                           else{
+							tempHTML +="<td>"+'බිම් සකස් කිරිම'+"</td>";
+                           }
+
+
+
+                           if (system_pest_and_diseases_solution.threatment_chemi_amount==null)
+                           {
+                             tempHTML +="<td>"+'........'+"</td>";
+                           }
+                           else{
+                            tempHTML +="<td>"+system_pest_and_diseases_solution.threatment_chemi_amount+"</td>";
+
+                           }
+
+
+
+                           tempHTML +="<td>"+system_pest_and_diseases_solution.threatment_method+"</td>";
+
+						   tempHTML +="<td>"+system_pest_and_diseases_solution.threatment_method_descreption+"</td>";
+						   if(system_pest_and_diseases_solution.prevention_level==0)
+						    {
+								tempHTML +="<td>"+'අඩු ප්‍රතිඵල පෙන්නයි'+"</td>";
+							}
+							else if(system_pest_and_diseases_solution.prevention_level==1)
+							{
+								tempHTML +="<td>"+'මදයස්ත ප්‍රථිපල පෙන්නයි'+"</td>";
+							}
+							else{
+								tempHTML +="<td>"+'ඉහව් ප්‍රථිපල පෙන්නයි'+"</td>";
+						    }
+
+                       tempHTML +="</tr>";
+
+                }
+                    document.getElementById("desaese_solutions").innerHTML = tempHTML;
+                     $('#farm_desaese_solutions').DataTable({
+                               destroy: true,
+                               "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+                     });
+           });
+        });
+
+
+}
+
+
+
+
+
+</script>
+{% endblock %}

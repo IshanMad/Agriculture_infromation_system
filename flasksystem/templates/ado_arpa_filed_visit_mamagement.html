@@ -1,0 +1,231 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+    {%if  current_user.active==1 %}
+        {%if  current_user.usertype=='ADO' %}
+                  <div class="container-fluid">
+                      <div class="row">
+                            <div class="col-md-8">
+                                <h3>Add Filed Visit Time Plan</h3>
+                            </div>
+                            <div class="col-md-4">
+                                <form action="/search" method="get">
+
+                                   <div class="input-group">
+                                       <span class="input-group-prepend">
+                                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#ADDFiledVIST"  style="margin-left:200px;" >Add Filed Visit</button>
+                                       </span>
+                                   </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ category }}">
+                                            {{ message }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                        {% endwith %}
+                        <p id="addworker" style="color:red;"></p>
+                        <script>
+                             var formErrors = {% if form.errors %}true{% else %}false{% endif %};
+                             if (formErrors) {
+                                     document.getElementById("addworker").innerHTML = 'New User is not submitted database your input data is not valid please check Add User dialog box';
+                              }
+                        </script>
+                            <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="ADDFiledVIST">
+                                  <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Add Filed Visit</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                        </button>
+                                      </div>
+                                        <script>
+                                            function fileValidation() {
+                                                var fileInput =
+                                                    document.getElementById('file');
+
+                                                var filePath = fileInput.value;
+
+                                                // Allowing file type
+                                                var allowedExtensions =
+                                                        /(\.docx|\.xlsx|\.doc|\.pdf)$/i;
+
+                                                if (!allowedExtensions.exec(filePath)) {
+                                                    alert('Invalid file type');
+                                                    fileInput.value = '';
+                                                    return false;
+                                                }
+                                                else
+                                                {
+
+                                                    // Image preview
+                                                    if (fileInput.files && fileInput.files[0]) {
+                                                        var reader = new FileReader();
+                                                        reader.onload = function(e) {
+                                                            document.getElementById(
+                                                                'imagePreview').innerHTML =
+                                                                '<img src="' + e.target.result
+                                                                + '"/>';
+                                                        };
+
+                                                        reader.readAsDataURL(fileInput.files[0]);
+                                                    }
+                                                }
+                                            }
+
+                                        </script>
+                                      <div class="modal-body">
+                                        <form method="POST" name="filedvisit" action="/ado_arpa_field_visit_management" enctype="multipart/form-data" >
+                                             {{ form.hidden_tag() }}
+                                             <div class="form-row">
+                                                 <div class="form-group col-md-6">
+                                                        {{ form.field_visit_date.label}}
+                                                        {% if form.field_visit_date.errors %}
+                                                            {{ form.field_visit_date(class="form-control is-invalid") }}
+                                                            <div class="invalid-feedback">
+                                                                {% for error in form.field_visit_date.errors %}
+                                                                    <span>{{ error }}</span>
+                                                                {% endfor %}
+                                                            </div>
+                                                         {% else %}
+                                                                {{ form.field_visit_date(class="form-control") }}
+                                                        {% endif %}
+											     </div>
+
+                                                 <div class="form-group col-md-6">
+                                                        {{ form.field_visit_name.label}}
+                                                        {% if form.field_visit_name.errors %}
+                                                            {{ form.field_visit_name(class="form-control is-invalid") }}
+                                                            <div class="invalid-feedback">
+                                                                {% for error in form.field_visit_name.errors %}
+                                                                    <span>{{ error }}</span>
+                                                                {% endfor %}
+                                                            </div>
+                                                         {% else %}
+                                                                {{ form.field_visit_name(class="form-control") }}
+                                                        {% endif %}
+											     </div>
+
+                                                  <div class="form-group col-md-6">
+                                                        {{ form.ado_field_visit_descreption.label}}
+                                                        {% if form.ado_field_visit_descreption.errors %}
+                                                            {{ form.ado_field_visit_descreption(class="form-control is-invalid") }}
+                                                            <div class="invalid-feedback">
+                                                                {% for error in form.ado_field_visit_descreption.errors %}
+                                                                    <span>{{ error }}</span>
+                                                                {% endfor %}
+                                                            </div>
+                                                         {% else %}
+                                                                {{ form.ado_field_visit_descreption(class="form-control") }}
+                                                        {% endif %}
+											     </div>
+
+                                                 <div class="form-group col-md-6">
+                                                        <label for="file">File</label>
+                                                        <input type="file" name="file" id="file" onchange="fileValidation()" class="form-control">
+											     </div>
+
+                                             </div>
+                                                {{form.submit(class="btn btn-primary")}}
+                                        </form>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+                            <table class="table table-bordered table-dark" id="example">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Date</th>
+                                  <th scope="col">Filed Visit Name</th>
+                                  <th scope="col">Satus</th>
+                                  <th scope="col">More</th>
+                                </tr>
+                              </thead>
+                                {% for  row in field_visit.items %}
+                                <tr>
+                                  <td>{{row.field_visit_date.strftime('%Y-%m-%d')}}</td>
+                                  <td>{{row.field_visit_name}}</td>
+                                        {% if row.isDone==0 %}
+                                            <td>Not Done Filed Vist</td>
+                                         {%else%}
+                                            <td>Done</td>
+                                        {% endif %}
+                                  <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#seemore" value="{{row.id}}">More</button></td>
+
+                                </tr>
+                               {% endfor %}
+                               {% for  page_num in field_visit.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=2) %}
+                                    {% if page_num %}
+                                        {%if field_visit.page == page_num %}
+                                            <a class="btn btn-info mb-4" href="{{url_for('ado_arpa_field_visit_management',page=page_num)}}">{{page_num}}</a>
+                                        {%else%}
+                                            <a class="btn btn-outline-info mb-4" href="{{url_for('ado_arpa_field_visit_management',page=page_num)}}">{{page_num}}</a>
+                                        {%endif%}
+                                    {%else%}
+
+                                    {% endif %}
+                               {% endfor %}
+                            </table>
+              </div>
+              <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="seemore">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Update SubCrop Variety Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                          <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Details</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Update</a>
+                          </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                          <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+                          </div>
+                          <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+
+                        </div>
+					  </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+            <script>
+                 $(".btn-info").click(function() {
+                   var id = $(this).val();
+                   console.log(id);
+
+                 });
+            </script>
+        {%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+					<h4>ඔබට මෙම පිටුවට පිවිසිමට අවසර නොමැත</h4>
+					<h2>Oops! You can't Access this Page</h2>
+					<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+					<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">ආපසු මුල් පිටුවට</a>
+				</div>
+			</div>
+        {% endif %}
+    {%else%}
+            <h1>Your Account is Deactive</h1>
+    {% endif %}
+{% endblock %}

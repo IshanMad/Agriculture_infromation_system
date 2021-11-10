@@ -1,0 +1,852 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+    {%if  current_user.active==1 %}
+        {%if  current_user.usertype=='ADO' %}
+        <style>
+            img {
+          border: 1px solid #ddd; /* Gray border */
+          border-radius: 4px;  /* Rounded border */
+          padding: 5px; /* Some padding */
+          width: 125px; /* Set a small width */
+        }
+        img2 {
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		padding: 1px;
+		width: 80px;
+		}
+
+		.modal-lg {
+			max-width: 1200px;
+		}
+        </style>
+		<script>
+			 $(document).ready(function() {
+                    $('#example').DataTable();
+
+                } );
+		</script>
+        <div class="container-fluid">
+        <h5>Add System Crops</h5>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        <form method="POST" name="" action="" enctype="multipart/form-data" >
+            {{ form.hidden_tag() }}
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    {{ form.system_crop_name.label}}
+						{% if form.system_crop_name.errors %}
+							{{ form.system_crop_name(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.system_crop_name.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+						{{ form.system_crop_name(class="form-control") }}
+					{% endif %}
+                </div>
+                <div class="form-group col-md-6">
+                    {{ form.system_crop_sci_name.label}}
+						{% if form.system_crop_sci_name.errors %}
+							{{ form.system_crop_sci_name(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.system_crop_sci_name.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+						{{ form.system_crop_sci_name(class="form-control") }}
+					{% endif %}
+                </div>
+                <div class="form-group col-md-6">
+                    {{ form.system_crop_catgoery.label}}
+						{% if form.system_crop_catgoery.errors %}
+							{{ form.system_crop_catgoery(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.system_crop_catgoery.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+						{{ form.system_crop_catgoery(class="form-control") }}
+					{% endif %}
+                </div>
+                <div class="form-group col-md-6">
+                    {{ form.system_crop_growing_time.label}}
+						{% if form.system_crop_growing_time.errors %}
+							{{ form.system_crop_growing_time(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.system_crop_growing_time.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+						{{ form.system_crop_growing_time(class="form-control") }}
+					{% endif %}
+                </div>
+                <div class="form-group col-md-6">
+                    {{ form.system_crop_image.label}}
+						{% if form.system_crop_image.errors %}
+							{{ form.system_crop_image(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.system_crop_image.errors %}
+										<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+						{% else %}
+						{{ form.system_crop_image(class="form-control") }}
+					{% endif %}
+                </div>
+
+            </div>
+            {{form.submit(class="btn btn-primary")}}
+        </form>
+		<table id="example" class="table display" cellspacing="0" width="100%">
+			 <thead>
+			 	<tr>
+                 <th> </th>
+                  <th>Crop Name</th>
+                  <th>Crop Science Name</th>
+                  <th>Crop Category</th>
+                  <th>Crop Maturity</th>
+                  <th>Add More</th>
+				</tr>
+			 </thead>
+			<tbody>
+				{% for  syscrop in syscrops %}
+					<tr>
+						<td><img src="/static/crop_images/{{syscrop.system_crop_image}}" class="img"></td>
+						<td>{{syscrop.system_crop_name}}</td>
+						<td>{{syscrop.system_crop_sci_name}}</td>
+						<td>{{syscrop.system_crop_catgoery}}</td>
+						<td>{{syscrop.system_crop_growing_time}}</td>
+
+                       <td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#More" value="{{syscrop.id}}">Add More</button></td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+            <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="More">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add More</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+						<ul class="nav nav-tabs" id="myTab" role="tablist">
+						  <li class="nav-item">
+							<a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Update Main Crop Category </a>
+						  </li>
+						  <li class="nav-item">
+							<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false" >Add Sub Category</a>
+						  </li>
+
+						</ul>
+						<div class="tab-content" id="myTabContent">
+						  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+							  <script>
+									function validateForm() {
+										document.getElementById("maincropcategorynamevalidation").innerHTML = '';
+										document.getElementById("cropsciencenamevalidation").innerHTML = '';
+										document.getElementById("systemcropgrowingtimevalidation").innerHTML = '';
+
+										var maincropcategoryname = document.cropform.maincropcategoryname;
+										var cropsciencename = document.cropform.cropsciencename;
+										var systemcropgrowingtime = document.cropform.systemcropgrowingtime;
+
+										if(maincropcategorynameValidation(maincropcategoryname))
+										{
+											if(cropsciencenameValidation(cropsciencename))
+											{
+												if(systemcropgrowingtimeValidation(systemcropgrowingtime))
+												{
+													return true;
+												}
+											}
+										}
+										return false;
+										function maincropcategorynameValidation(maincropcategoryname)
+										{
+
+											if(maincropcategoryname.value.length == 0)
+											{
+												document.getElementById("maincropcategorynamevalidation").innerHTML = 'Crop Name Empty or worng data type ';
+												 return false;
+											}
+											return true;
+
+										}
+										function cropsciencenameValidation(cropsciencename)
+										{
+
+											if(cropsciencename.value.length == 0)
+											{
+												 document.getElementById("cropsciencenamevalidation").innerHTML = 'Crop Science Name Empty or worng data type ';
+												return false;
+											}
+											return true;
+
+										}
+										function systemcropgrowingtimeValidation(systemcropgrowingtime)
+										 {
+											 if (systemcropgrowingtime.value.length == 0)
+											{
+											 	document.getElementById("systemcropgrowingtimevalidation").innerHTML = 'Please Fill Growing time';
+											 	return false;
+											 }
+											return true;
+										 }
+									}
+							  </script>
+							  <script>
+								function fileValidation() {
+														var fileInput =
+									document.getElementById('file');
+
+								var filePath = fileInput.value;
+
+								// Allowing file type
+								var allowedExtensions =
+										/(\.jpg|\.jpeg|\.png)$/i;
+
+								if (!allowedExtensions.exec(filePath)) {
+									alert('Invalid file type');
+									fileInput.value = '';
+									return false;
+								}
+								else
+								{
+
+									// Image preview
+									if (fileInput.files && fileInput.files[0]) {
+										var reader = new FileReader();
+										reader.onload = function(e) {
+											document.getElementById(
+												'imagePreview').innerHTML =
+												'<img src="' + e.target.result
+												+ '"/>';
+										};
+
+										reader.readAsDataURL(fileInput.files[0]);
+									}
+								}
+							}
+							</script>
+							<form method="POST" name="cropform" action="/update_sys_crop" onsubmit="return validateForm()" enctype="multipart/form-data" >
+								<div class="form-row">
+									<div class="form-group col-md-6">
+										 <label for="maincropcatname">Main Crop Catogrey Name</label>
+                                      	 <input class="form-control" id="maincropcategoryname" name="maincropcategoryname"  type="text">
+										 <p id="maincropcategorynamevalidation" style="color:red;"></p>
+									</div>
+									<div class="form-group col-md-6">
+										 <label for="cropsciencenames">Main Crop Science Name</label>
+                                      	 <input class="form-control" id="cropsciencename" name="cropsciencename"  type="text">
+										 <p id="cropsciencenamevalidation" style="color:red;"></p>
+									</div>
+									<div class="form-group col-md-6">
+										 <label for="cropcategory">Crop Catogery</label>
+										 <select class="form-control" id="cropcatogrtype" name="cropcatogrtype" required="">
+                                         <option value="Food Crops">Food Crops</option>
+                                         <option value="Fiber Crops">Fiber Crops</option>
+                                         <option value="Oil Crops">Oil Crops</option>
+										 <option value="Ornamental Crops">Ornamental Crops</option>
+										 <option value="Harvesting Crops">Harvesting Crops</option>
+										 <option value="GMO">GMO</option>
+                                      </select>
+									</div>
+
+								<div class="form-group col-md-6">
+										 <label for="systemcropgrowingtimes">Growing Time Months</label>
+                                      	 <input class="form-control" id="systemcropgrowingtime" name="systemcropgrowingtime"  type="text">
+										 <p id="systemcropgrowingtimevalidation" style="color:red;"></p>
+								</div>
+								<div class="form-group col-md-6">
+										 <label for="crpimage">Crop Image</label>
+										 <input type="file"  name="file"  id="file" class="form-control" onchange="return fileValidation()" >
+										 <p id="system_crop_imagevalidation" style="color:red;"></p>
+								</div>
+								<input  id="crpid" name="crpid" type="hidden">
+							  </div>
+								<input class="btn btn-primary" id="submit" name="submit" type="submit" value="Update">
+							 </form>
+						  </div>
+						  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+							  <script>
+								  function fileValidation2() {
+														var fileInput =
+									document.getElementById('files');
+
+								var filePath = fileInput.value;
+
+								// Allowing file type
+								var allowedExtensions =
+										/(\.jpg|\.jpeg|\.png)$/i;
+
+								if (!allowedExtensions.exec(filePath)) {
+									alert('Invalid file type');
+									fileInput.value = '';
+									return false;
+								}
+								else
+								{
+
+									// Image preview
+									if (fileInput.files && fileInput.files[0]) {
+										var reader = new FileReader();
+										reader.onload = function(e) {
+											document.getElementById(
+												'imagePreview').innerHTML =
+												'<img src="' + e.target.result
+												+ '"/>';
+										};
+
+										reader.readAsDataURL(fileInput.files[0]);
+									}
+								}
+							}
+							  </script>
+							  <script>
+								function validateForm2()
+								{
+									document.getElementById("varietynamevalidation").innerHTML = '';
+									document.getElementById("linedesignationvalidation").innerHTML = '';
+									document.getElementById("pedgireevalidation").innerHTML = '';
+									document.getElementById("suboriginvalidation").innerHTML = '';
+									document.getElementById("originvalidation").innerHTML = '';
+									document.getElementById("system_sub_crop_imagevalidation").innerHTML = '';
+
+									var varietyname = document.subcropform.varietyname;
+									var linedesignation = document.subcropform.linedesignation;
+									var pedgiree = document.subcropform.pedgiree;
+									var suborigin = document.subcropform.suborigin;
+									var method_propagation = document.subcropform.method_propagation;
+									var files = document.subcropform.files;
+
+									if(varietynameValidation(varietyname))
+									{
+
+
+
+													if(method_propagationValidation(method_propagation))
+													{
+														if(filesValidation(files))
+														{
+															return true;
+														}
+
+													}
+
+
+
+
+									}
+									return false;
+
+									function varietynameValidation(varietyname)
+									{
+										if(varietyname.value.length == 0)
+										{
+												document.getElementById("varietynamevalidation").innerHTML = 'Varitey Name Empty or worng data type!!';
+												 return false;
+										}
+										return true;
+									}
+
+									function method_propagationValidation(method_propagation)
+									{
+										if(method_propagation.value.length == 0)
+										{
+												document.getElementById("originvalidation").innerHTML = 'Method of Propagation Empty or worng data type!!';
+												return false;
+										}
+										return true;
+									}
+									function filesValidation(files)
+									{
+										if(files.value.length == 0)
+										{
+												document.getElementById("system_sub_crop_imagevalidation").innerHTML = 'Image can not be Empty!!';
+												return false;
+										}
+										return true;
+									}
+
+
+								}
+							  </script>
+							 <h6>Add Crop Sub Category Details</h6>
+							  <form method="POST" name="subcropform" action="/add_sys_sub_cat" onsubmit="return validateForm2()" enctype="multipart/form-data" >
+								  <div class="form-row">
+									<div class="form-group col-md-6">
+										<label for="maincatname">Main Category Name</label>
+										<input class="form-control" id="maincropcatname" name="maincropcatname"  type="text" disabled>
+									</div>
+									<div class="form-group col-md-6">
+										<label for="vname">Variety Name</label>
+										<input class="form-control" id="varietyname" name="varietyname"  type="text" >
+										<p id="varietynamevalidation" style="color:red;"></p>
+									</div>
+									<div class="form-group col-md-6">
+										<label for="ldesignation">Line Designation</label>
+										<input class="form-control" id="linedesignation" name="linedesignation"  type="text" >
+										<p id="linedesignationvalidation" style="color:red;"></p>
+									</div>
+									<div class="form-group col-md-6">
+										<label for="pdgiree">Pedgiree</label>
+										<input class="form-control" id="pedgiree" name="pedgiree"  type="text" >
+										<p id="pedgireevalidation" style="color:red;"></p>
+									</div>
+									<div class="form-group col-md-6">
+										<label for="origin">Origin</label>
+										<input class="form-control" id="suborigin" name="suborigin"  type="text" >
+										<p id="suboriginvalidation" style="color:red;"></p>
+									</div>
+									<div class="form-group col-md-6">
+										<label for="propagation">Method of Propagation</label>
+										<input class="form-control" id="method_propagation" name="method_propagation"  type="text" >
+										<p id="originvalidation" style="color:red;"></p>
+									</div>
+									<div class="form-group col-md-6">
+										 <label for="crpimage">Sub Category Crop Image</label>
+										 <input type="file"  name="files"  id="files" class="form-control" onchange="return fileValidation2()" >
+										 <p id="system_sub_crop_imagevalidation" style="color:red;"></p>
+									</div>
+									  <input  id="syscrp" name="syscrp" type="hidden">
+
+								  </div>
+								   <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Insert">
+							  </form>
+							   <h5 class="modal-title" >All Varieties in the System</h5>
+							   <table id="variety" class="table display" cellspacing="0" width="100%">
+								   <thead>
+								   	<tr>
+										 <th scope="col">Crop Image</th>
+										 <th scope="col">Variety Name</th>
+										 <th scope="col">Line Designatione</th>
+										 <th scope="col">pedgiree</th>
+										 <th scope="col">Origin</th>
+										 <th scope="col">Method of Propagation</th>
+										 <th scope="col">Action</th>
+									</tr>
+								   </thead>
+								   <tbody id="varitydata">
+
+                                  </tbody>
+							   </table>
+						  </div>
+
+						</div>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+			<!--Update Sub Crop Variety Model -->
+					<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="updatesubcrp">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="">Update SubCrop Variety Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+						 <ul class="nav nav-tabs" id="#" role="tablist">
+						  <li class="nav-item">
+							<a class="nav-link active" id="subcat-tab" data-toggle="tab" href="#subcat" role="tab" aria-controls="subcat" aria-selected="true">Update Subcategory</a>
+						  </li>
+						  <li class="nav-item">
+							<a class="nav-link" id="yield-tab" data-toggle="tab" href="#yield" role="tab" aria-controls="yield" aria-selected="false">Yield Info</a>
+						  </li>
+						  <li class="nav-item">
+							<a class="nav-link" id="maturity-tab" data-toggle="tab" href="#maturity" role="tab" aria-controls="maturity" aria-selected="false">Maturity</a>
+						  </li>
+						</ul>
+						<div class="tab-content" id="">
+						  <div class="tab-pane fade show active" id="subcat" role="tabpanel" aria-labelledby="subcat-tab">
+							  						<script>
+							  function updatevalidateForm()
+								{
+									document.getElementById("updatevarietynamevalidation").innerHTML = '';
+									document.getElementById("updatelinedesignationvalidation").innerHTML = '';
+									document.getElementById("updatepedgireevalidation").innerHTML = '';
+									document.getElementById("updatesuboriginvalidation").innerHTML = '';
+									document.getElementById("update_method_propagationalidation").innerHTML = '';
+									document.getElementById("crp_system_sub_crop_imagevalidation").innerHTML = '';
+
+									var varietyname = document.updatesubcropform.updatevarietyname;
+									var linedesignation = document.updatesubcropform.updatelinedesignation;
+									var pedgiree = document.updatesubcropform.updatepedgiree;
+									var suborigin = document.updatesubcropform.updatesuborigin;
+									var method_propagation = document.updatesubcropform.update_method_propagation;
+									var files = document.updatesubcropform.crpfiles;
+
+									if(varietynameValidation(varietyname))
+									{
+
+										if(method_propagationValidation(method_propagation))
+										{
+
+												return true;
+
+										}
+									}
+									return false;
+
+									function varietynameValidation(varietyname)
+									{
+										if(varietyname.value.length == 0)
+										{
+												document.getElementById("updatevarietynamevalidation").innerHTML = 'Varitey Name Empty or worng data type!!';
+												 return false;
+										}
+										return true;
+									}
+
+									function method_propagationValidation(method_propagation)
+									{
+										if(method_propagation.value.length == 0)
+										{
+												document.getElementById("update_method_propagationalidation").innerHTML = 'Method of Propagation Empty or worng data type!!';
+												return false;
+										}
+										return true;
+									}
+									/*
+									function filesValidation(files)
+									{
+										if(files.value.length == 0)
+										{
+												document.getElementById("crp_system_sub_crop_imagevalidation").innerHTML = 'Image can not be Empty!!';
+												return false;
+										}
+										return true;
+									}*/
+
+
+								}
+						  </script>
+						  <script>
+							 function fileValidation3() {
+														var fileInput =
+									document.getElementById('crpfiles');
+
+								var filePath = fileInput.value;
+
+								// Allowing file type
+								var allowedExtensions =
+										/(\.jpg|\.jpeg|\.png)$/i;
+
+								if (!allowedExtensions.exec(filePath)) {
+									alert('Invalid file type');
+									fileInput.value = '';
+									return false;
+								}
+								else
+								{
+
+									// Image preview
+									if (fileInput.files && fileInput.files[0]) {
+										var reader = new FileReader();
+										reader.onload = function(e) {
+											document.getElementById(
+												'imagePreview').innerHTML =
+												'<img src="' + e.target.result
+												+ '"/>';
+										};
+
+										reader.readAsDataURL(fileInput.files[0]);
+									}
+								}
+							}
+						  </script>
+						<form method="POST" name="updatesubcropform" action="/update_sub_crop" onsubmit="return updatevalidateForm()" enctype="multipart/form-data">
+							<div class="form-row">
+								<div class="form-group col-md-6">
+									<label for="vname">Variety Name</label>
+									<input class="form-control" id="updatevarietyname" name="updatevarietyname" type="text">
+									<p id="updatevarietynamevalidation" style="color:red;"></p>
+								</div>
+								<div class="form-group col-md-6">
+									<label for="ldesignation">Line Designation</label>
+									<input class="form-control" id="updatelinedesignation" name="updatelinedesignation" type="text">
+									<p id="updatelinedesignationvalidation" style="color:red;"></p>
+								</div>
+								<div class="form-group col-md-6">
+									<label for="pdgiree">Pedgiree</label>
+									<input class="form-control" id="updatepedgiree" name="updatepedgiree" type="text">
+									<p id="updatepedgireevalidation" style="color:red;"></p>
+								</div>
+								<div class="form-group col-md-6">
+									<label for="origin">Origin</label>
+									<input class="form-control" id="updatesuborigin" name="updatesuborigin" type="text">
+									<p id="updatesuboriginvalidation" style="color:red;"></p>
+								</div>
+								<div class="form-group col-md-6">
+									<label for="propagation">Method of Propagation</label>
+									<input class="form-control" id="update_method_propagation" name="update_method_propagation" type="text">
+									<p id="update_method_propagationalidation" style="color:red;"></p>
+								</div>
+								<div class="form-group col-md-6">
+									<label for="crpimage">Sub Category Crop Image</label>
+									 <input type="file" name="crpfiles" id="crpfiles" class="form-control" onchange="return fileValidation3()">
+									 <p id="crp_system_sub_crop_imagevalidation" style="color:red;"></p>
+								</div>
+								<input id="syscrp_id" name="syscrp_id" type="hidden" >
+								<input id="subcrp_id" name="subcrp_id" type="hidden" >
+
+							</div>
+							<input class="btn btn-primary" id="submit" name="submit" type="submit" value="Update">
+						 </form>
+						  </div>
+						  <div class="tab-pane fade" id="yield" role="tabpanel" aria-labelledby="yield-tab">
+							   <script>
+								function yieldvalidateForm()
+								{
+									document.getElementById("highestyieldrecordvalidation").innerHTML = '';
+									document.getElementById("averageyieldrecordvalidation").innerHTML = '';
+									var highestyieldrecord = document.yieldform.highestyieldrecord;
+									var averageyieldrecord = document.yieldform.averageyieldrecord;
+
+									if(highestyieldrecordValidation(highestyieldrecord))
+									{
+										if(averageyieldrecordValidation(averageyieldrecord))
+										{
+											return true;
+										}
+									}
+									return false;
+									function highestyieldrecordValidation(highestyieldrecord)
+									{
+										if(highestyieldrecord.value.length == 0)
+										{
+												document.getElementById("highestyieldrecordvalidation").innerHTML = 'This Input Filed Cannot be Empty!!';
+												 return false;
+										}
+										return true;
+									}
+
+									function averageyieldrecordValidation(averageyieldrecord)
+									{
+										if(averageyieldrecord.value.length == 0)
+										{
+												document.getElementById("averageyieldrecordvalidation").innerHTML = 'This Input Filed Cannot be Empty!!';
+												return false;
+										}
+										return true;
+									}
+								}
+							  </script>
+							  <h5>Add Crop Yield Info</h5>
+							  <form method="POST" name="yieldform" action="/add_yield_sub_crop" onsubmit="return yieldvalidateForm()" >
+								<div class="form-row">
+								<div class="form-group col-md-6">
+									<label for="highest_yield_recordaed">Highest Yield Reorded</label>
+									<input class="form-control" id="highestyieldrecord" name="highestyieldrecord" type="text">
+									<p id="highestyieldrecordvalidation" style="color:red;"></p>
+								</div>
+								<div class="form-group col-md-6">
+									<label for="average_yield_recordaed">Average Yield Reorded</label>
+									<input class="form-control" id="averageyieldrecord" name="averageyieldrecord" type="text">
+									<p id="averageyieldrecordvalidation" style="color:red;"></p>
+								</div>
+								</div>
+								  <h6>If Crop is a Paddy please fill below details</h6>
+								<div class="form-row">
+								 <div class="form-group col-md-6">
+									<label for="average_yield_yla">Average Yield Yala Season</label>
+									<input class="form-control" id="average_yield_yla" name="average_yield_yla" type="text">
+									<p id="average_yield_ylavalidation" style="color:red;"></p>
+								</div>
+								 <div class="form-group col-md-6">
+									<label for="average_yield_mha">Average Yield Maha Season</label>
+									<input class="form-control" id="average_yield_mha" name="average_yield_mha" type="text">
+									<p id="average_yield_mhavalidation" style="color:red;"></p>
+								</div>
+								 <div class="form-group col-md-6">
+									<label for="average_yield_mha">Reaction to Salinity</label>
+									<input class="form-control" id="reactiontosalinity" name="reactiontosalinity" type="text">
+									<p id="reactiontosalinityvalidation" style="color:red;"></p>
+								</div>
+									 <input id="subcat_id" name="subcat_id" type="hidden" >
+								</div>
+								<input class="btn btn-primary" id="submit" name="submit" type="submit" value="Insert">
+							  </form>
+							  <h6>Yield Info</h6>
+								<table id="yields" class="table display" cellspacing="0" width="100%">
+									   <thead>
+										<tr>
+											 <th scope="col">Highest Yield Record</th>
+											 <th scope="col">Average Yield</th>
+											 <th scope="col">Average Yield Yala Season</th>
+											 <th scope="col">Average Yield Maha Season</th>
+											 <th scope="col">Reaction to Salinity</th>
+
+										</tr>
+									   </thead>
+									   <tbody id="yielddata">
+
+									  </tbody>
+								   </table>
+						  </div>
+						  <div class="tab-pane fade" id="maturity" role="tabpanel" aria-labelledby="maturity-tab">
+								<form method="POST" name="#" action="#" onsubmit="#" >
+									<div class="form-group col-md-6">
+										<label for="vname">Season Name</label>
+										<input class="form-control" id="seson_name" name="seson_name" type="text">
+										<p id="seson_namevalidation" style="color:red;"></p>
+									</div>
+									<div class="form-group col-md-6">
+										<label for="num_of_date">Number of Date</label>
+										<input class="form-control" id="num_of_date" name="num_of_date" type="text">
+										<p id="num_of_datevalidation" style="color:red;"></p>
+									</div>
+								</form>
+						  </div>
+						</div>
+					  </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+
+        </div>
+		<script>
+			 $(".btn-danger").click(function() {
+				   var id = $(this).val();
+				   console.log(id);
+				   fetch('/add_sys_sub_crops/'+ id).then(function(response){
+						response.json().then(function(data){
+							for(let syscrop of data.get_syscrops){
+
+								document.getElementById("maincropcategoryname").value = syscrop.system_crop_name;
+								document.getElementById("maincropcatname").value = syscrop.system_crop_name;
+								document.getElementById("cropsciencename").value = syscrop.system_crop_sci_name;
+								document.getElementById("cropcatogrtype").value = syscrop.system_crop_catgoery;
+								document.getElementById("systemcropgrowingtime").value = syscrop.system_crop_growing_time;
+								document.getElementById("crpid").value = syscrop.id;
+								document.getElementById("syscrp").value = syscrop.id;
+								 document.getElementById("profile-tab").setAttribute("data-value",syscrop.id);
+							}
+						 });
+				   });
+
+				   fetch('/get_sub_cat_details/'+ id).then(function(response){
+					response.json().then(function(data){
+						var sub_cat_crops = "";
+						for(let syssubcrop of data.get_all_sub_variety){
+							sub_cat_crops +="<tr>";
+							var crop_image = syssubcrop.sub_crop_image;
+							sub_cat_crops +="<td>"+'<img src="/static/crop_images/'+crop_image+'" class="img2" >'+"</td>";
+                            sub_cat_crops +="<td>"+syssubcrop.variety_name+"</td>";
+                            var line_designation = syssubcrop.line_designation;
+                            if(line_designation==null)
+                            {
+                            	sub_cat_crops +="<td>"+'............'+"</td>";
+                            }
+                            else
+                            {
+                            	sub_cat_crops +="<td>"+line_designation+"</td>";
+                            }
+                            var pedgiree = syssubcrop.pedgiree;
+                            if(pedgiree==null)
+                            {
+								sub_cat_crops +="<td>"+'............'+"</td>";
+                            }
+                            else{
+                            	sub_cat_crops +="<td>"+pedgiree+"</td>";
+                            }
+                            var origin = syssubcrop.origin;
+                            if(origin==null)
+                            {
+								sub_cat_crops +="<td>"+'............'+"</td>";
+                            }
+                            else
+                            {
+								sub_cat_crops +="<td>"+origin+"</td>";
+                            }
+                            sub_cat_crops +="<td>"+syssubcrop.method_of_propagation+"</td>";
+                            sub_cat_crops +='<td><button type="button" class="btn btn-danger" onclick="updatesubcropFunction(this.value)" data-toggle="modal" data-target="#updatesubcrp" value="'+syssubcrop.id+'">'+'Update'+'</button></td>';
+
+                            sub_cat_crops +="</tr>";
+
+						}
+						document.getElementById("varitydata").innerHTML = sub_cat_crops;
+
+					 });
+				});
+				$('#variety').DataTable({
+				 destroy: true,
+				 "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+
+			});
+	 		 });
+	 		 <!--Update Sub Crop Variety Model get data -->
+	 		 function updatesubcropFunction(val){
+	 		 	console.log(val);
+	 		 	fetch('/get_update_sub_cat_details/'+ val).then(function(response){
+						response.json().then(function(data){
+							for(let subcrpupdate of data.get_update_all_sub_variety){
+								document.getElementById("updatevarietyname").value = subcrpupdate.variety_name;
+								document.getElementById("updatelinedesignation").value = subcrpupdate.line_designation;
+								document.getElementById("updatepedgiree").value = subcrpupdate.pedgiree;
+								document.getElementById("updatesuborigin").value = subcrpupdate.origin;
+								document.getElementById("update_method_propagation").value = subcrpupdate.method_of_propagation;
+								document.getElementById("subcrp_id").value = subcrpupdate.id;
+								document.getElementById("subcat_id").value = subcrpupdate.id;
+								document.getElementById("syscrp_id").value = subcrpupdate.syscrop_id;
+							}
+						 });
+				});
+
+				fetch('/get_yield_crop_details/'+ val).then(function(response){
+						response.json().then(function(data){
+							var sub_yield = "";
+							for(let subcrpyield of data.get_all_yield){
+								sub_yield +="<tr>";
+								sub_yield +="<td>"+subcrpyield.highest_yield_recorded+"</td>";
+								sub_yield +="<td>"+subcrpyield.average_yield+"</td>";
+								sub_yield +="<td>"+subcrpyield.average_yield_yla+"</td>";
+								sub_yield +="<td>"+subcrpyield.reaction_to_salinity+"</td>";
+								sub_yield +="</tr>";
+							}
+							document.getElementById("yielddata").innerHTML = sub_yield;
+						 });
+				});
+
+
+	 		 }
+		</script>
+        {%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+					<h4>ඔබට මෙම පිටුවට පිවිසිමට අවසර නොමැත</h4>
+					<h2>Oops! You can't Access this Page</h2>
+					<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+					<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">ආපසු මුල් පිටුවට</a>
+				</div>
+			</div>
+        {% endif %}
+    {%else%}
+            <h1>Your Account is Deactive</h1>
+    {% endif %}
+{% endblock %}

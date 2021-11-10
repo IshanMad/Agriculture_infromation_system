@@ -1,0 +1,821 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+
+    {%if  current_user.active==1 %}
+        {%if  current_user.usertype=='Farmer' %}
+ <div class="container-fluid">
+
+             <ul class="nav nav-pills justify-content-center">
+                  {% for  myfarm in farmdata %}
+                  <li class="nav-item">
+                   <a class="nav-link " href="{{url_for('my_farm',id=myfarm.id)}}">Home</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Resources</a>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" href="{{url_for('farm_worker',id=myfarm.id)}}">Employee</a>
+                      <a class="dropdown-item" href="#">Machinery</a>
+                      <a class="dropdown-item" href="#">Something else here</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="#">Separated link</a>
+                    </div>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Crop Management</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                  </li>
+                    {% endfor %}
+             </ul>
+
+            <div class="row">
+
+                <div class="col-md-8">
+                    <h5>Farm Wokers</h5>
+                     {% for  myfarm in farmdata %}
+                     <h6 style="color:red">Farm Name:{{myfarm.farmname}}</h6>
+                     {% endfor %}
+
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-prepend">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" style="margin-left:190px;">Add Worker</button>
+                        </span>
+                    </div>
+				</div>
+            </div>
+            <p id="addworker" style="color:red;"></p>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+
+
+                <script>
+
+                $(document).ready(function() {
+                    $('#example').DataTable();
+
+                } );
+
+
+
+
+
+                var formErrors = {% if form.errors %}true{% else %}false{% endif %};
+
+
+                    if (formErrors) {
+                    document.getElementById("addworker").innerHTML = 'New worker is not submitted database your input data is not valid please check add worker dialog box';
+                    }
+
+                function validateForm() {
+                document.getElementById("fnmevalidate").innerHTML = '';
+                document.getElementById("lnmevalidate").innerHTML = '';
+                document.getElementById("phnvalidate").innerHTML = '';
+                document.getElementById("adrvalidate").innerHTML = '';
+                var fname = document.myForm.fristname1;
+                var lname = document.myForm.lastname1;
+                var adrs = document.myForm.address1;
+                var phn = document.myForm.phone1;
+
+                    if(fristnameValidation(fname))
+                        {
+                            if(lastnameValidation(lname))
+                                {
+                                    if(adrsValidation(adrs))
+                                        {
+                                            if(phnValidation(phn))
+                                            {
+                                                return true;
+                                            }
+                                        }
+                                }
+                        }
+                        return false;
+
+                 function fristnameValidation(fname)
+                 {
+                    var letters = /^[A-Za-z]+$/;
+                    if(fname.value.match(letters))
+                    {
+                         return true;
+                    }
+                    else
+                    {
+                        document.getElementById("fnmevalidate").innerHTML = 'Frist Name Empty or worng data type ';
+                        /*alert('Frist Name Empty or worng data type ');*/
+                        return false;
+                    }
+
+                 }
+
+                 function lastnameValidation(lname)
+                 {
+                    var letters = /^[A-Za-z]+$/;
+                    if(lname.value.match(letters))
+                    {
+                         return true;
+                    }
+                    else
+                    {
+
+                          document.getElementById("lnmevalidate").innerHTML = 'Last Name Empty or worng data type ';
+                        /*alert('Last Name Empty or worng data type ');*/
+                        return false;
+                    }
+
+                 }
+
+                 function phnValidation(phn)
+	             {
+
+                        var phoneno = /^\d{9}$/;
+                      if(phn.value.match(phoneno))
+                      {
+                          return true;
+                      }
+                      else
+                      {
+                         document.getElementById("phnvalidate").innerHTML = 'Not a valid Phone Number ';
+                         /*alert("Not a valid Phone Number");*/
+                         return false;
+                      }
+	                }
+
+
+                 function adrsValidation(adrs)
+	            {
+                    if (adrs.value.length == 0)
+                    {
+                     document.getElementById("adrvalidate").innerHTML = 'Please Fill Address';
+                     /*alert("Fill Address");*/
+                     return false;
+                     }
+                    return true;
+
+	            }
+               }
+               function Form2()
+               {
+                    document.getElementById("workermsgvalidate").innerHTML = '';
+                    document.getElementById("workerphnvalidate").innerHTML = '';
+
+
+                    var workermsg = document.myForm2.msg;
+                    var workerphn = document.myForm2.showphone;
+
+                    if(workermsgValidation(workermsg))
+                        {
+                            if(workerphnValidation(workerphn))
+                                {
+
+                                                return true;
+
+                                }
+                        }
+                        return false;
+
+                        function workermsgValidation(workermsg)
+	                    {
+                            if (workermsg.value.length == 0)
+                            {
+                             document.getElementById("workermsgvalidate").innerHTML = 'Please Fill Message Filed';
+                             /*alert("Fill Address");*/
+                             return false;
+                             }
+                            return true;
+	                    }
+
+	                     function pworkerphnValidation(workerphn)
+                         {
+
+                                var phoneno = /^\d{9}$/;
+                              if(workerphn.value.match(phoneno))
+                              {
+                                  return true;
+                              }
+                              else
+                              {
+                                 document.getElementById("workerphnvalidate").innerHTML = 'Not a valid Phone Number ';
+                                 /*alert("Not a valid Phone Number");*/
+                                 return false;
+                              }
+                            }
+
+               }
+               function cmntValidation()
+                    {
+                        document.getElementById("cmtvalidate").innerHTML = '';
+                        var cmntvalidate = document.cmntForm.cmnt;
+                        if(workercmntValidation(cmntvalidate))
+                        {
+                            return true;
+                        }
+                        return false;
+                         function workercmntValidation(cmntvalidate)
+	                    {
+                            if (cmntvalidate.value.length == 0)
+                            {
+                             document.getElementById("cmtvalidate").innerHTML = 'Please Fill Comment Filed';
+                             /*alert("Fill Address");*/
+                             return false;
+                             }
+                            return true;
+	                    }
+                    }
+                     function Validate()
+                     {
+                          var file = document.getElementById("file").value;
+
+                            if(file!='')
+                             {
+                                 var checkdoc = file.toLowerCase();
+                                   if(!checkdoc.match(/(\.txt|\.pdf|\.csv|\.doc|\.docx)$/)){
+                                            document.getElementById("file").focus();
+                                            document.getElementById("errorName5").innerHTML="Wrong file selected";
+                                            return false;
+                                   }
+                                    var img = document.getElementById("file");
+                                    console.log(img.files[0].size)
+                                    if(img.files[0].size > 16777216)  // validation according to file size
+                                    {
+                                    document.getElementById("errorName5").innerHTML="Maxmum upload limt to 16 MB";
+                                    return false;
+                                     }
+                                    var doctitle = document.getElementById("title").value;
+                                    if(doctitle == '')
+                                    {
+                                         document.getElementById("titleerr").innerHTML="Please add Document Title";
+                                         return false;
+                                    }
+
+                               return true;
+                          }
+                     }
+
+
+                </script>
+
+
+                <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="myModal">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add worker</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                                     {% for  myfarm in farmdata %}
+                                      <form method="POST" action="{{url_for('farm_worker',id=myfarm.id)}}">
+                                     {% endfor %}
+                                        {{ form.hidden_tag() }}
+                                          <div class="form-row">
+                                              <div class="form-group col-md-6">
+                                                  {{ form.fristname.label}}
+                                                    {% if form.fristname.errors %}
+                                                        {{ form.fristname(class="form-control  is-invalid") }}
+                                                            <div class="invalid-feedback">
+                                                                {% for error in form.fristname.errors %}
+                                                                    <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                            </div>
+                                                    {% else %}
+                                                        {{ form.fristname(class="form-control") }}
+                                                  {% endif %}
+
+                                             </div>
+                                            <div class="form-group col-md-6">
+                                              {{ form.lastname.label}}
+                                              {% if form.lastname.errors %}
+                                                    {{ form.lastname(class="form-control  is-invalid") }}
+                                                        <div class="invalid-feedback">
+                                                            {% for error in form.lastname.errors %}
+                                                                <span>{{ error }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                {% else %}
+                                                    {{ form.lastname(class="form-control") }}
+                                                {% endif %}
+                                            </div>
+                                              <div class="form-group col-md-6">
+                                           {{ form.gender.label}}
+                                              {% if form.gender.errors %}
+                                                    {{ form.gender(class="form-control  is-invalid") }}
+                                                        <div class="invalid-feedback">
+                                                            {% for error in form.gender.errors %}
+                                                                <span>{{ error }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                {% else %}
+                                                    {{ form.gender(class="form-control") }}
+                                                {% endif %}
+                                          </div>
+                                           <div class="form-group col-md-6">
+                                           {{ form.dob.label}}
+                                              {% if form.dob.errors %}
+                                                    {{ form.dob(class="form-control datepicker  is-invalid") }}
+                                                        <div class="invalid-feedback">
+                                                            {% for error in form.dob.errors %}
+                                                                <span>{{ error }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                {% else %}
+                                                    {{ form.dob(class="form-control") }}
+                                                {% endif %}
+                                          </div>
+                                          <div class="form-group col-md-6">
+                                             {{ form.address.label}}
+                                                    {% if form.address.errors %}
+                                                                {{ form.address(class="form-control  is-invalid") }}
+                                                                <div class="invalid-feedback">
+                                                                    {% for error in form.address.errors %}
+                                                                        <span>{{ error }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                             {% else %}
+                                                                    {{ form.address(class="form-control") }}
+                                                            {% endif %}
+                                          </div>
+                                          <div class="form-row col-md-6">
+                                             {{ form.phone.label}}
+                                                    {% if form.phone.errors %}
+                                                                {{ form.phone(class="form-control  is-invalid") }}
+                                                                <div class="invalid-feedback">
+                                                                    {% for error in form.phone.errors %}
+                                                                        <span>{{ error }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                    {% else %}
+                                                         {{ form.phone(class="form-control") }}
+                                                    {% endif %}
+                                          </div>
+                                            <div class="form-row col-md-6">
+                                             {{ form.type.label}}
+                                                    {% if form.type.errors %}
+                                                                {{ form.type(class="form-control  is-invalid") }}
+                                                                <div class="invalid-feedback">
+                                                                    {% for error in form.type.errors %}
+                                                                        <span>{{ error }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                    {% else %}
+                                                         {{ form.type(class="form-control") }}
+                                                    {% endif %}
+                                          </div>
+                                          </div>
+
+                                      </br>
+                                               {{form.submit(class="btn btn-primary")}}
+                                        </form>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+             <table id="example" class="table display" cellspacing="0" width="100%">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Gender</th>
+                  <th>Address</th>
+                  <th>Phone</th>
+                  <th>Type</th>
+                  <th>Action</th>
+                  <th>More</th>
+                </tr>
+              </thead>
+              <tbody>
+                 {% for  row in myFarmWoker  %}
+                <tr>
+                  <td>{{row.worker_frist_name}}  {{row.worker_last_name}}</td>
+                    {%if row.worker_gender ==1 %}
+                  <td>Male</td>
+                    {%else%}
+                  <td>Fe-Male</td>
+                    {% endif %}
+                  <td>{{row.worker_address}}</td>
+                  <td>{{row.worker_phone}}</td>
+                  <td>{{row.worker_type}}</td>
+                  <td><button type="button" class="btn btn-danger" data-toggle="modal" data-target=".bd-example-modal-lg1" value="{{row.id}}">Update</button></td>
+                  <td><button type="button" class="btn  btn-success" id="b1" data-toggle="modal" data-target=".bd-example-modal-lgM" value="{{row.id}}">More</button></td>
+                </tr>
+                 {% endfor %}
+              </tbody>
+            </table>
+
+            	<div class="modal fade bd-example-modal-lg1" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="editmodal">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id=medit">Update worker</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        		<form method="POST" name="myForm" action="{{url_for('farm_update_worker')}}" onsubmit="return validateForm()" >
+											  <div class="form-row">
+                                                      <div class="form-group col-md-6">
+                                                          <label for="fristname1">Frist Name</label>
+                                                                <input class="form-control" id="fristname1" name="fristname1"  type="text">
+                                                                <p id="fnmevalidate" style="color:red;"></p>
+                                                      </div>
+                                                    <div class="form-group col-md-6">
+                                                      <label for="lastname">Last Name</label>
+                                                            <input class="form-control" id="lastname1" name="lastname1" required="" type="text" value="">
+                                                            <p id="lnmevalidate" style="color:red;"></p>
+                                                    </div>
+                                                    <div class="form-group col-md-6">
+                                                        <label for="gender">Gender</label>
+                                                            <select class="form-control" id="gender1" name="gender1" required="">
+                                                                <option value="1">Male</option>
+                                                                <option value="0">Female</option>
+                                                            </select>
+                                                     </div>
+                                                   <div class="form-group col-md-6">
+                                                   <label for="dob">DOB</label>
+                                                       <input class="form-control" id="dob1" name="dob1" type="date" >
+                                                  </div>
+                                                  <div class="form-group col-md-6">
+                                                     <label for="address">Address</label>
+                                                      <textarea class="form-control" id="address1" name="address1" ></textarea>
+                                                      <p id="adrvalidate" style="color:red;"></p>
+                                                  </div>
+                                                  <div class="form-row col-md-6">
+                                                     <label for="phone">Phone</label>
+                                                      <input class="form-control" id="phone1" name="phone1" required="" type="text" value="">
+                                                      <p id="phnvalidate" style="color:red;"></p>
+                                                  </div>
+                                                    <div class="form-row col-md-6">
+                                                        <label for="type">Woker Type</label>
+                                                        <select class="form-control" id="type1" name="type1" required="">
+                                                            <option value="Permernet">Permernet</option>
+                                                            <option value="Casual">Casual</option>
+                                                        </select>
+                                                  </div>
+											  </div>
+                                                  <input  id="fid" name="fid" type="hidden">
+										  <br>
+												   <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Insert">
+                                        </form>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+
+            			<div class="modal fade bd-example-modal-lgM" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabeM" aria-hidden="true" id="moremodal">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="">Manage worker</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+						  <li class="nav-item">
+							<a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+						  </li>
+						  <li class="nav-item">
+							<a class="nav-link" id="alarm-tab" data-toggle="tab" href="#alarm" role="tab" aria-controls="alarm" aria-selected="false" onclick='return check()'>Send SMS</a>
+						  </li>
+						  <li class="nav-item">
+							<a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" onclick='return checkcmnt()'>Comment</a>
+						  </li>
+                          <li class="nav-item">
+							<a class="nav-link" id="document-tab" data-toggle="tab" href="#document" role="tab" aria-controls="document" aria-selected="false" onclick="return getdocument()">Document</a>
+						  </li>
+						</ul>
+						<div class="tab-content" id="myTabContent">
+						  <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="shwfristname">Frist Name</label>
+                                    <p id="showworkerfname" class="form-control" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="shwlastname">Last Name</label>
+                                    <p id="shwlastname" class="form-control" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="shwgender">Gender</label>
+                                    <p id="shwgender" class="form-control" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="shwdob">Date of Birth</label>
+                                    <p id="shwdob" class="form-control" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="shwadr">Adress</label>
+                                    <p id="shwadr" class="form-control" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="shwphn">Phone Number</label>
+                                    <p id="shwphn" class="form-control" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="shwtype">Type</label>
+                                    <p id="shwtype" class="form-control" style="color:red;"></p>
+                                </div>
+                            </div>
+                          </div>
+						  <div class="tab-pane fade" id="alarm" role="tabpanel" aria-labelledby="alarm-tab">
+                              <h6>Note:</h6>
+                              <p>This Function provide to facility to send scheduled SMS to your workers in specific time period..!</p>
+                              <form method="POST" name="myForm2" action="{{url_for('insert_worker_alarm')}}" onsubmit="return Form2()">
+                              <div class="form-row">
+                                  <div class="form-group col-md-6">
+                                      <label for="message">Message</label>
+                                        <textarea class="form-control" id="msg" name="msg" ></textarea>
+                                        <p id="workermsgvalidate" style="color:red;"></p>
+                                  </div>
+                                   <div class="form-group col-md-6">
+                                      <label for="msgsphone">Phone</label>
+                                        <input type="text"  name="showphone"  id="showphone" class="form-control" >
+                                        <p id="workerphnvalidate" style="color:red;"></p>
+                                  </div>
+                                  <input  id="alrmfrmid" name="alrmfrmid" type="hidden">
+                              </div>
+                               <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Send">
+                              </form>
+                              <h6>Out box</h6>
+                                <table class="table table-bordered" id="">
+                                  <thead>
+                                    <tr>
+
+                                      <th scope="col">Massage</th>
+                                      <th scope="col">Phone</th>
+                                      <th scope="col">Date</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody id="data">
+                                  </tbody>
+                                </table>
+                                  <script>
+                                    function check() {
+                                            document.addEventListener("click", function(evt){
+                                            var el = document.getElementById( 'alarm-tab' );
+                                            el.getAttribute( 'data-value' );
+                                            var id = el.dataset.value
+                                            console.log(id);
+                                            });
+                                            fetch('/show_worker_alarms/'+id).then(function(response){
+                                                response.json().then(function(data){
+                                                  var temp ="";
+			                                        for(let show_alarm of data.get_user_alrms){
+
+                                                                temp +="<tr>";
+                                                                temp +="<td>"+show_alarm.worker_msg+"</td>";
+                                                                temp +="<td>"+show_alarm.worker_phone+"</td>";
+                                                                temp +="<td>"+show_alarm.created_timestamp+"</td>";
+                                                                temp +="<tr>";
+                                                                var d = show_alarm.id;
+                                                                console.log(show_alarm.worker_msg);
+                                                    }
+                                                    document.getElementById("data").innerHTML = temp;
+                                                });
+                                             });
+                                     }
+
+                                    </script>
+                          </div>
+						  <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                            <h6>Add comment about Farm Worker:</h6>
+                             <form method="POST" name="cmntForm" action="{{url_for('insert_worker_cmnt')}}" onsubmit="return cmntValidation()" >
+                                 <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                      <label for="cmnt">Comment</label>
+                                        <textarea class="form-control" id="cmnt" name="cmnt" ></textarea>
+                                        <p id="cmtvalidate" style="color:red;"></p>
+                                  </div>
+                                 </div>
+                                 <input  id="wkrid" name="wkrid" type="hidden">
+                                  <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Send">
+                             </form>
+                              <h6>Previous Comments:</h6>
+                              <table class="table table-bordered" id="">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Comment</th>
+                                      <th scope="col">Date</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody id="data1">
+                                  </tbody>
+                                </table>
+                                <script>
+                                      function checkcmnt(){
+                                        document.addEventListener("click", function(evt){
+                                            var el = document.getElementById( 'contact-tab' );
+                                            el.getAttribute( 'data-value' );
+                                            var id = el.dataset.value
+                                            console.log(id);
+										});
+										fetch('/view_worker_cmnt/'+id).then(function(response){
+                                                response.json().then(function(data){
+                                                  var temp1 ="";
+			                                        for(let show_cmnt of data.view_cmnts){
+
+                                                                temp1 +="<tr>";
+                                                                temp1 +="<td>"+show_cmnt.worker_comment+"</td>";
+                                                                temp1 +="<td>"+show_cmnt.created_timestamp+"</td>";
+                                                                temp1 +="<tr>";
+
+                                                    }
+                                                    document.getElementById("data1").innerHTML = temp1;
+                                                });
+                                             });
+
+                                    }
+                                </script>
+                          </div>
+
+                          <div class="tab-pane fade" id="document" role="tabpanel" aria-labelledby="document-tab">
+                              <h6>Add Here Worker Related Documents</h6>
+                              <form method="POST" name="docform" action="{{url_for('upload_document')}}" id="docuplod" enctype=multipart/form-data onSubmit="return Validate()";>
+                               <div class="form-row">
+                                   <div class="form-group col-md-6">
+                                    <label for="document">Upload Document</label>
+                                       <input type="file"  name="file"  id="file" class="form-control" >
+                                    <p id="errorName5"  style="color:red;"></p>
+                                </div>
+
+                                   <div class="form-group col-md-6">
+                                    <label for="document">Document Title</label>
+                                       <input type="text"  name="title"  id="title" class="form-control" >
+                                    <p id="titleerr"  style="color:red;"></p>
+                                    </div>
+
+                               </div>
+                                     <input  id="docid" name="docid" type="hidden">
+                                   <input class="btn btn-primary"  name="submit" type="submit" value="Upload">
+                              </form>
+                                  <table class="table table-bordered" id="ex">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Title</th>
+                                      <th scope="col">action</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody id="datadoc">
+                                  </tbody>
+                                </table>
+
+                                 <script>
+
+                                   function getdocument(){
+                                     var docid = document.getElementById("docid").value;
+                                     console.log(docid);
+                                     let tabledata =  document.getElementById('datadoc')
+                                     fetch('/show_worker_document/'+docid).then(function(response){
+
+                                            response.json().then(function(data){
+                                            let tableHTML = '';
+                                             for(let show_doc of data.get_user_docs){
+
+                                                tableHTML+='<tr>';
+                                                tableHTML +='<td>'+show_doc.doc_title+'</td>';
+                                                tableHTML +='<td scope="col"><a href="/documents/'+show_doc.document_name+'" class="btn btn-info" >'+'Downlaod'+'</a></td>';
+                                                tableHTML+='</tr>';
+
+                                             }
+                                              tabledata.innerHTML = tableHTML;
+                                             console.log(tableHTML);
+                                             $('#ex').DataTable({
+                                                    destroy: true,
+                                                    "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "All"]]
+
+                                             });
+                                            });
+
+                                     });
+                                    }
+                                </script>
+                          </div>
+
+						</div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                </div>
+            </div>
+ </div>
+
+        {%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+					<h4>ඔබට මෙම පිටුවට පිවිසිමට අවසර නොමැත</h4>
+					<h2>Oops! You can't Access this Page</h2>
+					<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+					<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">ආපසු මුල් පිටුවට</a>
+				</div>
+			</div>
+        {% endif %}
+    {%else%}
+        <h1>Your Account is Deactive</h1>
+    {% endif %}
+<script>
+$("button").click(function() {
+    var fired_button = $(this).val();
+
+     fetch('/update_worker/'+ fired_button).then(function(response){
+         response.json().then(function(data){
+
+          for(let updteworker of data.updteworkers){
+                    var name = updteworker.worker_frist_name;
+                    document.getElementById("fristname1").value = name;
+                    var last_name = updteworker.worker_last_name;
+                    document.getElementById("lastname1").value = last_name;
+                    var worker_gender = updteworker.worker_gender ? 1:0;
+                    document.getElementById("gender1").value = worker_gender;
+                    var worker_dob = updteworker.worker_dob;
+                    document.getElementById("dob1").value = worker_dob;
+                    var worker_address =  updteworker.worker_address;
+                    document.getElementById("address1").value = worker_address;
+                    var worker_phone = updteworker.worker_phone
+                    document.getElementById("phone1").value = worker_phone;
+                    var worker_type = updteworker.worker_type;
+                    document.getElementById("type1").value = worker_type;
+                    var id = updteworker.id;
+
+                    document.getElementById("fid").value = id;
+
+                    }
+
+
+             });
+        });
+});
+var id = '';
+var worker_phone ='';
+$(".btn-success").on('click', function(e) {
+    var val = $(this).val();
+    console.log(val)
+    fetch('/show_worker/'+ val).then(function(response){
+         response.json().then(function(data){
+
+          for(let shwteworker of data.show_workers){
+                    var name = shwteworker.worker_frist_name;
+                    document.getElementById("showworkerfname").innerHTML = name;
+                    var last_name = shwteworker.worker_last_name;
+                    document.getElementById("shwlastname").innerHTML = last_name;
+                    var worker_gender = shwteworker.worker_gender ? 1:0;
+                    if(worker_gender=='1')
+                    {
+                        document.getElementById("shwgender").innerHTML = 'Male';
+                    }
+                    else
+                    {
+                        document.getElementById("shwgender").innerHTML = 'Fe-Male';
+                    }
+
+                    var worker_dob = shwteworker.worker_dob;
+                    document.getElementById("shwdob").innerHTML = worker_dob;
+                    var worker_address =  shwteworker.worker_address;
+                    document.getElementById("shwadr").innerHTML = worker_address;
+                     worker_phone = shwteworker.worker_phone
+                    document.getElementById("shwphn").innerHTML = worker_phone;
+                    var worker_type = shwteworker.worker_type;
+                    document.getElementById("shwtype").innerHTML = worker_type;
+                     id = shwteworker.id;
+                    document.getElementById("alrmfrmid").value = id;
+                    document.getElementById("alarm-tab").setAttribute("data-value", id);
+                    document.getElementById("contact-tab").setAttribute("data-value", id);
+                    document.getElementById("document-tab").setAttribute("data-value", id);
+                    document.getElementById("wkrid").value = id;
+                    document.getElementById("docid").value = id;
+                    document.getElementById("showphone").value = worker_phone;
+                    console.log(worker_phone)
+
+                    }
+
+
+             });
+        });
+
+});
+
+
+</script>
+{% endblock %}

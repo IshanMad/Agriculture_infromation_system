@@ -1,0 +1,247 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw==" crossorigin=""></script>
+    {%if  current_user.active==1 %}
+        {%if  current_user.usertype=='Farmer' %}
+ <div class="contanier">
+             <ul class="nav nav-pills justify-content-center">
+                  {% for  myfarm in farmdata %}
+                  <li class="nav-it em">
+                   <a class="nav-link " href="{{url_for('my_farm',id=myfarm.id)}}">Home</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Resources</a>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" href="{{url_for('farm_worker',id=myfarm.id)}}">Employee</a>
+                      <a class="dropdown-item" href="#">Machinery</a>
+                      <a class="dropdown-item" href="#">Something else here</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="#">Separated link</a>
+                    </div>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                  </li>
+                    {% endfor %}
+             </ul>
+
+            <div class="row">
+
+                <div class="col-md-8">
+                    <h5>Farm Wokers</h5>
+                     {% for  myfarm in farmdata %}
+                     <h6 style="color:red">Farm Name:{{myfarm.farmname}}</h6>
+                     {% endfor %}
+                </div>
+     <div class="col-md-4">
+                    <form action="/search" method="get">
+
+                       <div class="input-group">
+                           <input type="search" name="search" class="form-control">
+                           <span class="input-group-prepend">
+                            <button type="submit" class="btn-btn-primary">Search Farm</button>
+                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Add Worker</button>
+                           </span>
+                       </div>
+                    </form>
+                </div>
+        </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+
+                <script>
+                var formErrors = {% if form.errors %}true{% else %}false{% endif %};
+
+                $(document).ready(function() {
+                    if (formErrors) {
+                        $('#myModal').modal('show');
+                    }
+
+
+                });
+
+                </script>
+
+                <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="myModal">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add worker</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                                     {% for  myfarm in farmdata %}
+                                      <form method="POST" action="{{url_for('farm_worker',id=myfarm.id)}}">
+                                     {% endfor %}
+                                        {{ form.hidden_tag() }}
+                                          <div class="form-row">
+                                              <div class="form-group col-md-6">
+                                                  {{ form.fristname.label}}
+                                                    {% if form.fristname.errors %}
+                                                        {{ form.fristname(class="form-control  is-invalid") }}
+                                                            <div class="invalid-feedback">
+                                                                {% for error in form.fristname.errors %}
+                                                                    <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                            </div>
+                                                    {% else %}
+                                                        {{ form.fristname(class="form-control") }}
+                                                  {% endif %}
+
+                                             </div>
+                                            <div class="form-group col-md-6">
+                                              {{ form.lastname.label}}
+                                              {% if form.lastname.errors %}
+                                                    {{ form.lastname(class="form-control  is-invalid") }}
+                                                        <div class="invalid-feedback">
+                                                            {% for error in form.lastname.errors %}
+                                                                <span>{{ error }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                {% else %}
+                                                    {{ form.lastname(class="form-control") }}
+                                                {% endif %}
+                                            </div>
+                                              <div class="form-group col-md-6">
+                                           {{ form.gender.label}}
+                                              {% if form.gender.errors %}
+                                                    {{ form.gender(class="form-control  is-invalid") }}
+                                                        <div class="invalid-feedback">
+                                                            {% for error in form.gender.errors %}
+                                                                <span>{{ error }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                {% else %}
+                                                    {{ form.gender(class="form-control") }}
+                                                {% endif %}
+                                          </div>
+                                           <div class="form-group col-md-6">
+                                           {{ form.dob.label}}
+                                              {% if form.dob.errors %}
+                                                    {{ form.dob(class="form-control datepicker  is-invalid") }}
+                                                        <div class="invalid-feedback">
+                                                            {% for error in form.dob.errors %}
+                                                                <span>{{ error }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                {% else %}
+                                                    {{ form.dob(class="form-control") }}
+                                                {% endif %}
+                                          </div>
+                                          <div class="form-group col-md-6">
+                                             {{ form.address.label}}
+                                                    {% if form.address.errors %}
+                                                                {{ form.address(class="form-control  is-invalid") }}
+                                                                <div class="invalid-feedback">
+                                                                    {% for error in form.address.errors %}
+                                                                        <span>{{ error }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                             {% else %}
+                                                                    {{ form.address(class="form-control") }}
+                                                            {% endif %}
+                                          </div>
+                                          <div class="form-row col-md-6">
+                                             {{ form.phone.label}}
+                                                    {% if form.phone.errors %}
+                                                                {{ form.phone(class="form-control  is-invalid") }}
+                                                                <div class="invalid-feedback">
+                                                                    {% for error in form.phone.errors %}
+                                                                        <span>{{ error }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                    {% else %}
+                                                         {{ form.phone(class="form-control") }}
+                                                    {% endif %}
+                                          </div>
+                                            <div class="form-row col-md-6">
+                                             {{ form.type.label}}
+                                                    {% if form.type.errors %}
+                                                                {{ form.type(class="form-control  is-invalid") }}
+                                                                <div class="invalid-feedback">
+                                                                    {% for error in form.type.errors %}
+                                                                        <span>{{ error }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                    {% else %}
+                                                         {{ form.type(class="form-control") }}
+                                                    {% endif %}
+                                          </div>
+                                          </div>
+
+                                      </br>
+                                               {{form.submit(class="btn btn-primary")}}
+                                        </form>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Gender</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                 {% for  row in myFarmWoker %}
+                <tr>
+                  <td>{{row.worker_frist_name}}  {{row.worker_last_name}}</td>
+                    {%if row.worker_gender ==1 %}
+                        <td>Male</td>
+                    {%else%}
+                        <td>Fe-Male</td>
+                    {% endif %}
+                  <td>{{row.worker_address}}</td>
+                  <td>{{row.worker_phone}}</td>
+                  <td>{{row.worker_type}}</td>
+                    <td><a class="nav-link " href="{{url_for('farm_worker',id=row.id)}}"><img src="/static/icons/pencil-square.svg" alt="" width="20" height="20" title="Edit"></a></td>
+
+                </tr>
+                 {% endfor %}
+              </tbody>
+            </table>
+
+</div>
+
+
+        {%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+					<h4>ඔබට මෙම පිටුවට පිවිසිමට අවසර නොමැත</h4>
+					<h2>Oops! You can't Access this Page</h2>
+					<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+					<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">ආපසු මුල් පිටුවට</a>
+				</div>
+			</div>
+        {% endif %}
+    {%else%}
+        <h1>Your Account is Deactive</h1>
+    {% endif %}
+
+{% endblock %}

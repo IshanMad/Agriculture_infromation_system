@@ -1,0 +1,29 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+    {%if  current_user.active==1 %}
+        <div class="container">
+                 <ul class="nav justify-content-center">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('analytics') }}">All Farms</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('infectedpestmap') }}">Infected Farms</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('charts') }}">Charts</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                  </li>
+                </ul>
+            <h4 class="font-weight-bold">Crop Consumption Prediction in the Kaluthara District</h4>
+            <img src="\static\ai\fmyfigpredict.jpg" class="img-fluid" alt="Responsive image">
+        </div>
+
+{%else%}
+        <h1>Your Account is Deactive</h1>
+{% endif %}
+{% endblock %}

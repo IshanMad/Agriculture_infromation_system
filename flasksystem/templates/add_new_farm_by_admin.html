@@ -1,0 +1,280 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script>
+	$(document).ready(function(){
+		OSMPICKER.initmappicker(6.5854, 79.9607, 10, {
+
+			latitudeId: "latitude",
+			longitudeId: "longitude",
+			radiusId: "radius"
+		});
+	});
+</script>
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script src="http://cdnjs.buttflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+<script src="http://k4r573n.github.io/leaflet-control-osm-geocoder/Control.OSMGeocoder.js"></script>
+<script src="/static/scripts/gis/OSMLocationPicker.js"></script>
+<div class="container-fluid">
+{%if  current_user.active==1 %}
+    <link type="text/css" rel="stylesheet" href="../static/content/style.css" />
+    {%if  current_user.usertype=='ADO' %}
+
+
+		        <div class="row justify-content-center">
+                        <div class="col-md-8">
+                           <div class="card">
+                               <div class="card-header">Add new Farm</div>
+                               <div class="card-body">
+                                   {% with messages = get_flashed_messages(with_categories=true) %}
+                                        {% if messages %}
+                                            {% for category, message in messages %}
+                                                <div class="alert alert-{{ category }}">
+                                                    {{ message }}
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                   {% endwith %}
+                                    <form method="POST" action="">
+                                        {{ form.hidden_tag() }}
+                                        <div class="form-group row">
+                                        <label class="col-md-4 col-form-label text-md-right" >Select your Farm Location on Map</label>
+                                        </div>
+                                                <div id="locationPicker" class="img-thumbnail" style="width: 1500px; height: 400px; margin-left:5px; "class="img-thumbnail"></div>
+                                             </br>
+                                         <div class="form-group row">
+
+                                                {{ form.farmname.label(class="col-md-4 col-form-label text-md-right") }}
+                                            <div class="col-md-6">
+                                                {% if form.farmname.errors %}
+                                                    {{ form.farmname(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.farmname.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.farmname(class="form-control") }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                                {{ form.latitude.label(class="col-md-4 col-form-label text-md-right") }}
+                                            <div class="col-md-6">
+                                                {% if form.latitude.errors %}
+                                                    {{ form.latitude(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.latitude.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.latitude(class="form-control") }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                                {{ form.longitude.label(class="col-md-4 col-form-label text-md-right") }}
+                                            <div class="col-md-6">
+                                                {% if form.longitude.errors %}
+                                                    {{ form.longitude(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.longitude.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.longitude(class="form-control") }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                                {{ form.phone.label(class="col-md-4 col-form-label text-md-right") }}
+                                            <div class="col-md-6">
+                                                {% if form.phone.errors %}
+                                                    {{ form.phone(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.phone.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.phone(class="form-control") }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            {{ form.address.label(class="col-md-4 col-form-label text-md-right") }}
+                                            <div class="col-md-6">
+                                                {% if form.address.errors %}
+                                                    {{ form.address(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.address.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                 {% else %}
+                                                        {{ form.address(class="form-control") }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            {{ form.email.label(class="col-md-4 col-form-label text-md-right") }}
+                                            <div class="col-md-6">
+                                                {% if form.email.errors %}
+                                                    {{ form.email(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.email.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                 {% else %}
+                                                        {{ form.email(class="form-control") }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            {{ form.surface.label(class="col-md-4 col-form-label text-md-right") }}
+                                            <div class="col-md-6">
+                                                {% if form.surface.errors %}
+                                                    {{ form.surface(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.surface.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                 {% else %}
+                                                        {{ form.surface(class="form-control") }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                         <div class="form-group row">
+                                           <label for="district" class="col-md-4 col-form-label text-md-right">Users In Area</label>
+                                             <div class="col-md-6">
+                                                <select name="user" class="form-control" id="user">
+                                                  {% for user in users %}
+                                                    <option value="{{user.id}}">{{user.fristname}} {{user.lastname}}</option>
+                                                  {% endfor %}
+                                                </select>
+                                             </div>
+                                         </div>
+                                     <div class="form-group row">
+                                       <label for="district" class="col-md-4 col-form-label text-md-right">District</label>
+                                         <div class="col-md-6">
+                                            <select name="district" class="form-control" id="district">
+                                              {% for dis in district %}
+                                                <option value="{{dis.id}}">{{dis.districtName}}</option>
+                                              {% endfor %}
+                                            </select>
+                                         </div>
+                                     </div>
+                                                        <div class="form-group row">
+                                 <label for="area" class="col-md-4 col-form-label text-md-right">Area</label>
+
+                                <div class="col-md-6">
+                                        <select name="area" class="form-control" id="area">
+
+                                        {% for area in area %}
+                                       <option value="{{area.id}}" >{{area.areaName}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div class="form-group row">
+                                 <label for="devisionoffice" class="col-md-4 col-form-label text-md-right">Devision office</label>
+
+                                <div class="col-md-6">
+                                        <select name="devisionoffice" class="form-control" id="devisionoffice">
+
+                                        {% for devisionoffices in devisionoffices %}
+                                       <option value="{{devisionoffices.id}}" >{{devisionoffices.officeName}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                                        <div class="form-group row mb-0">
+                                             <div class="col-md-8 offset-md-4">
+                                                {{ form.submit(class="btn btn-primary") }}
+
+                                             </div>
+                                        </div>
+
+                                    </form>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+
+      {%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+					<h4>ඔබට මෙම පිටුවට පිවිසිමට අවසර නොමැත</h4>
+					<h2>Oops! You can't Access this Page</h2>
+					<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+					<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">ආපසු මුල් පිටුවට</a>
+				</div>
+			</div>
+        {% endif %}
+
+
+{%else%}
+        <h1>Your Account is Deactive</h1>
+{% endif %}
+</div>
+<script>
+    let district_select = document.getElementById('district')
+    let area_select = document.getElementById('area')
+    let devisionoffice_select = document.getElementById('devisionoffice')
+
+    district_select.onchange = function(){
+        district = district_select.value;
+
+       fetch('/district/' + district).then(function(response){
+            response.json().then(function(data){
+                  let optionHTML = '';
+                    for(let area of data.areas){
+                        optionHTML += '<option value="'+area.id+'">' +area.areaName+ '</option>';
+                    }
+                    area_select.innerHTML = optionHTML;
+
+             });
+       });
+     area = area_select.value;
+        fetch('/area/'+ area).then(function(response){
+         response.json().then(function(data){
+         let optionHTML = '';
+          for(let devisionoffice of data.devisionoffices){
+                        optionHTML += '<option value="'+devisionoffice.id+'">' +devisionoffice.officeName+ '</option>';
+                    }
+                   devisionoffice_select.innerHTML = optionHTML;
+
+             });
+        });
+    }
+
+    area_select.onchange = function(){
+        area = area_select.value;
+        fetch('/area/'+ area).then(function(response){
+         response.json().then(function(data){
+         let optionHTML = '';
+          for(let devisionoffice of data.devisionoffices){
+                        optionHTML += '<option value="'+devisionoffice.id+'">' +devisionoffice.officeName+ '</option>';
+                    }
+                   devisionoffice_select.innerHTML = optionHTML;
+
+             });
+        });
+
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,457 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+<style>
+.card {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+    margin-top: 20px;
+    margin-bottom :5px;
+
+}
+
+</style>
+{%if  current_user.active==1 %}
+
+         {%if  current_user.usertype=='Admin' %}
+            <h1>Admin</h1>
+         {% elif current_user.usertype=='ARPA'%}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h2>Agriculture Research and Product Assistant</h2>
+                    </div>
+                    <div class="col-md-4">
+                        <form action="/search" method="get">
+
+                           <div class="input-group">
+
+                               <span class="input-group-prepend">
+
+
+                               </span>
+                           </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class=" col-md-4">
+                      <div class="carousel-inner">
+                          <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                            <div class="carousel-item active">
+                              <img class="d-block w-100" src="\static\images\1.jpg" alt="First slide">
+                            </div>
+                            <div class="carousel-item">
+                              <img class="d-block w-100" src="..." alt="Second slide">
+                            </div>
+                            <div class="carousel-item">
+                              <img class="d-block w-100" src="..." alt="Third slide">
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                      <div class=" col-md-4">
+                            <iframe width="680.1" height="196.55" src="https://embed.windy.com/embed2.html?lat=7.983&lon=80.717&detailLat=6.932&detailLon=79.848&width=605.1&height=196.55&zoom=7&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=true&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
+                        </div>
+                </div>
+
+
+
+
+
+
+
+                             <div class="row text-center">
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('manage_farm_arpa') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\imgfarm.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Farms</h4>
+                                                     <p class="card-text">To Manage Area Farms</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-4">
+                               <div class="view overlay">
+                                  <a  class="nounderline" href="{{ url_for('manage_all_farmers_by_arpa') }}">
+                                    <div class="card h-100">
+                                       <img class="card-img-top" src="\static\images\arpaaddfarmers.jpg" alt="User Icon">
+                                          <div class="card-body">
+                                              <h4 class="card-title">Add Farmers</h4>
+                                               <p class="card-text">To Manage Area Farms</p>
+                                          </div>
+
+                                    </div>
+                                  </a>
+                               </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('farmer_weather') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\weather.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Weather</h4>
+                                                     <p class="card-text">To user Weather report to your Farming Tasks</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('paddy_leaf_color_chart') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\leafchart.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Paddy Leaf Color Chart</h4>
+                                                     <p class="card-text">To use Check Your paddy Nutirion needs</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('chat') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\Chat.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Chat</h4>
+                                                     <p class="card-text">Communicate with Users and Farmers</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('analytics') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\analytics.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Analaytics</h4>
+                                                     <p class="card-text">To get AI and GIS based Dessions</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                    </div>
+
+            </div>
+         {% elif current_user.usertype=='ADO'%}
+                <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h3>Agrian Development Officer</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <form action="/search" method="get">
+
+                           <div class="input-group">
+
+                               <span class="input-group-prepend">
+
+
+                               </span>
+                           </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class=" col-md-4">
+                      <div class="carousel-inner">
+                          <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                            <div class="carousel-item active">
+                              <img class="d-block w-100" src="\static\images\1.jpg" alt="First slide">
+                            </div>
+                            <div class="carousel-item">
+                              <img class="d-block w-100" src="..." alt="Second slide">
+                            </div>
+                            <div class="carousel-item">
+                              <img class="d-block w-100" src="..." alt="Third slide">
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                      <div class=" col-md-4">
+                            <iframe width="680.1" height="196.55" src="https://embed.windy.com/embed2.html?lat=7.983&lon=80.717&detailLat=6.932&detailLon=79.848&width=605.1&height=196.55&zoom=7&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=true&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
+                        </div>
+                </div>
+
+
+                    <div class="row text-center">
+                             <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('manage_all_farmers') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\usrmanage.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Manage User</h4>
+                                                     <p class="card-text">To Use Manage All Famers User Account</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('manage_farm') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\imgfarm.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">View all Farms In Area</h4>
+                                                     <p class="card-text">To View All Farms details in Area</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('farmer_weather') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\weather.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Weather</h4>
+                                                     <p class="card-text">To Use Weather Based Dessions</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('paddy_leaf_color_chart') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\leafchart.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Paddy Leaf Color Chart</h4>
+                                                     <p class="card-text">To Use Paddy get dession paddy leaf needs nutrion Amount</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('analytics') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\analytics.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Analaytics</h4>
+                                                     <p class="card-text">To get AI and GIS based Dessions</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('chat') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\Chat.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Chat</h4>
+                                                     <p class="card-text">Communicate with Users and Farmers</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('manage_sys_crops') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\Crop_Management.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Crop Management</h4>
+                                                     <p class="card-text">Manage Crops in the System</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('ado_arpa_field_visit_management') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\filedvisit.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">ARPA Filed Visit</h4>
+                                                     <p class="card-text">Agriculture Reserach and Product Assistant Filed Visit</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+                    </div>
+
+            </div>
+         {% elif current_user.usertype=='Farmer'%}
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h1>Farmer</h1>
+                    </div>
+                    <div class="col-md-4">
+                        <form action="/search" method="get">
+
+                           <div class="input-group">
+                               <input type="search" name="search" class="form-control">
+                               <span class="input-group-prepend">
+                                <button type="submit" class="btn-btn-primary">Search Crops</button>
+                                <a href="#" class="btn btn-info">Add Farm</a>
+                               </span>
+                           </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class=" col-md-4">
+                      <div class="carousel-inner">
+                          <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                            <div class="carousel-item active">
+                              <img class="d-block w-100" src="\static\images\1.jpg" alt="First slide">
+                            </div>
+                            <div class="carousel-item">
+                              <img class="d-block w-100" src="..." alt="Second slide">
+                            </div>
+                            <div class="carousel-item">
+                              <img class="d-block w-100" src="..." alt="Third slide">
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                      <div class=" col-md-4">
+                            <iframe width="680.1" height="196.55" src="https://embed.windy.com/embed2.html?lat=7.983&lon=80.717&detailLat=6.932&detailLon=79.848&width=605.1&height=196.55&zoom=7&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=true&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
+                        </div>
+                </div>
+
+
+
+
+
+
+                    <div class="row text-center">
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('farm_home') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\imgfarm.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">My Farm</h4>
+                                                     <p class="card-text">To create new Farm and Manage your Farms</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('farmer_weather') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\weather.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Weather</h4>
+                                                     <p class="card-text">To user Weather report to your Farming Tasks</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('paddy_leaf_color_chart') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\leafchart.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Paddy Leaf Color Chart</h4>
+                                                     <p class="card-text">To use Check Your paddy Nutirion needs</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('chat') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\Chat.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Chat</h4>
+                                                     <p class="card-text">Communicate with Users and Farmers</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-4">
+                                    <div class="view overlay">
+                                        <a  class="nounderline" href="{{ url_for('analytics') }}">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="\static\images\analytics.jpg" alt="User Icon">
+                                                <div class="card-body">
+                                                     <h4 class="card-title">Analaytics</h4>
+                                                     <p class="card-text">To get AI and GIS based Dessions</p>
+                                                </div>
+
+                                        </div>
+                                         </a>
+                                    </div>
+                            </div>
+
+                    </div>
+
+            </div>
+         {%else%}
+            <h1>Unauthorized</h1>
+         {% endif %}
+
+{%else%}
+        <h1>Your Account is Deactive</h1>
+{% endif %}
+
+
+
+{% endblock %}

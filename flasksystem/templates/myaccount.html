@@ -1,0 +1,245 @@
+{% extends "afterloginlayout.html" %}
+
+{% block content %}
+    <link type="text/css" rel="stylesheet" href="../static/content/style.css" />
+<style>
+    .container {
+            width: 100%;
+            padding-right: auto;
+            padding-left: auto;
+            /* margin-right: auto; */
+            margin-left: auto;
+            argin-right:100;
+
+        }
+</style>
+{%if  current_user.active==1 %}
+<div class="container">
+
+         <div class="row justify-content-center">
+        <div class="col-md-8">
+             <div class="card">
+                 <div class="card-header">Update My Account</div>
+
+                    <div class="card-body">
+                        <form method="POST" action="/myaccount" enctype="multipart/form-data">
+                              {% with messages = get_flashed_messages(with_categories=true) %}
+                                    {% if messages %}
+                                      {% for category, message in messages %}
+                                        <div class="alert alert-{{ category }}">
+                                          {{ message }}
+                                        </div>
+                                      {% endfor %}
+                                    {% endif %}
+                                 {% endwith %}
+                             {{ form.hidden_tag() }}
+                             <div class="form-group row">
+                                        {{ form.fristname.label(class="col-md-4 col-form-label text-md-right") }}
+                                        <div class="col-md-6">
+                                            {% if form.fristname.errors %}
+                                                {{ form.fristname(class="form-control form-control-lg is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.fristname.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                        </div>
+                                             {% else %}
+                                                    {{ form.fristname(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                             </div>
+
+                             <div class="form-group row">
+                                        {{ form.lastname.label(class="col-md-4 col-form-label text-md-right") }}
+                                        <div class="col-md-6">
+                                            {% if form.lastname.errors %}
+                                                {{ form.lastname(class="form-control form-control-lg is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.lastname.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                        </div>
+                                             {% else %}
+                                                    {{ form.lastname(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                             </div>
+
+                            <div class="form-group row">
+                                        {{ form.email.label(class="col-md-4 col-form-label text-md-right") }}
+                                        <div class="col-md-6">
+                                            {% if form.email.errors %}
+                                                {{ form.email(class="form-control form-control-lg is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.email.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                        </div>
+                                             {% else %}
+                                                    {{ form.email(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                             </div>
+
+
+
+                            <div class="form-group row">
+                                        {{ form.phone.label(class="col-md-4 col-form-label text-md-right") }}
+                                        <div class="col-md-6">
+                                            {% if form.phone.errors %}
+                                                {{ form.phone(class="form-control form-control-lg is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.phone.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                        </div>
+                                             {% else %}
+                                                    {{ form.phone(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                             </div>
+
+                            <div class="form-group row">
+                                        {{ form.address.label(class="col-md-4 col-form-label text-md-right") }}
+                                        <div class="col-md-6">
+                                            {% if form.address.errors %}
+                                                {{ form.address(class="form-control form-control-lg is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.address.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                        </div>
+                                             {% else %}
+                                                    {{ form.address(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                             </div>
+
+
+
+
+                             <div class="form-group row">
+                                     <label for="active" class="col-md-4 col-form-label text-md-right">Active</label>
+                                        <div class="col-md-6">
+                                            <select name="active" class="form-control" id="active">
+
+                                           <option value="1" {% if current_user.active==1 %}selected="selected"{% endif %} >Active</option>
+                                           <option value="0" {% if current_user.active==0 %}selected="selected"{% endif %} >De Active</option>
+
+                                            </select>
+                                        </div>
+
+                            </div>
+                            <div class="form-group row">
+                                 <label for="district" class="col-md-4 col-form-label text-md-right">District</label>
+                                <div class="col-md-6">
+                                        <select name="district" class="form-control" id="district">
+                                        {% set default_value = select_district.id %}
+                                        {% for dis in district %}
+                                       <option value="{{dis.id}}" {% if dis.id == default_value %}selected="selected"{% endif %} >{{dis.districtName}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                 <label for="area" class="col-md-4 col-form-label text-md-right">Area</label>
+
+                                <div class="col-md-6">
+                                        <select name="area" class="form-control" id="area">
+
+                                        {% for area in area %}
+                                       <option value="{{area.id}}" {% if area.id == devisionoffice_area_id %}selected="selected"{% endif %} >{{area.areaName}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div class="form-group row">
+                                 <label for="devisionoffice" class="col-md-4 col-form-label text-md-right">Devision office</label>
+
+                                <div class="col-md-6">
+                                        <select name="devisionoffice" class="form-control" id="devisionoffice">
+                                        {% set default_value = current_user.devisionoffice_id %}
+                                        {% for devisionoffices in devisionoffices %}
+                                       <option value="{{devisionoffices.id}}" {% if devisionoffices.id == default_value %}selected="selected"{% endif %} >{{devisionoffices.officeName}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group row">
+                                        {{ form.picture.label(class="col-md-4 col-form-label text-md-right") }}
+                                        <div class="col-md-6">
+                                            {% if form.picture.errors %}
+                                                {{ form.picture(class="form-control form-control-lg is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.picture.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                 </div>
+                                             {% else %}
+                                                    {{ form.picture(class="form-control") }}
+                                            {% endif %}
+                                        </div>
+                             </div>
+                        <div class="form-group row mb-0">
+                            <div class="col-md-6 offset-md-4">
+
+                                {{form.submit(class="btn btn-primary")}}
+
+                            </div>
+                        </div>
+                        </form>
+
+                    </div>
+             </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    let district_select = document.getElementById('district')
+    let area_select = document.getElementById('area')
+    let devisionoffice_select = document.getElementById('devisionoffice')
+
+    district_select.onchange = function(){
+        district = district_select.value;
+
+       fetch('/district/' + district).then(function(response){
+            response.json().then(function(data){
+                  let optionHTML = '';
+                    for(let area of data.areas){
+                        optionHTML += '<option value="'+area.id+'">' +area.areaName+ '</option>';
+                    }
+                    area_select.innerHTML = optionHTML;
+
+             });
+       });
+
+    }
+
+    area_select.onchange = function(){
+        area = area_select.value;
+        fetch('/area/'+ area).then(function(response){
+         response.json().then(function(data){
+         let optionHTML = '';
+          for(let devisionoffice of data.devisionoffices){
+                        optionHTML += '<option value="'+devisionoffice.id+'">' +devisionoffice.officeName+ '</option>';
+                    }
+                   devisionoffice_select.innerHTML = optionHTML;
+
+             });
+        });
+
+    }
+</script>
+{%else%}
+        <h1>Your Account is Deactive</h1>
+{% endif %}
+{% endblock %}

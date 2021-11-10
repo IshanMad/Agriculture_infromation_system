@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+           <div class="card">
+               <div class="card-header">Confirm Email</div>
+               <div class="card-body">
+                   {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                   {% endwith %}
+                    <a class="btn btn-outline-primary" href="{{ url_for('login') }}" role="button">Go to Login</a>
+               </div>
+           </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}

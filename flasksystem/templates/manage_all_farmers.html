@@ -1,0 +1,524 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+{%if  current_user.active==1 %}
+    {%if  current_user.usertype=='ADO' %}
+    <div class="container-fluid">
+    <div class="row">
+                <div class="col-md-8">
+                    <h1>Manage User</h1>
+                </div>
+                <div class="col-md-4">
+                    <form action="/search" method="get">
+
+                       <div class="input-group">
+                           <span class="input-group-prepend">
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#ADDUSER"  style="margin-left:250px;" >Add User</button>
+                           </span>
+                       </div>
+                    </form>
+                </div>
+        </div>
+        <div class="modal fade bd-example-modal-lg mymdl" tabindex="-1" style="margin-left:15px" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="ADDUSER">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                          <div class="row">
+                              <h5 class="modal-title" id="">Add User</h5>
+                          </div>
+
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+
+                        <form method="POST" name="" action=""  >
+                              {{ form.hidden_tag() }}
+							 <div class="form-row">
+
+											<div class="form-group col-md-6">
+												{{ form.fristname.label}}
+													{% if form.fristname.errors %}
+														{{ form.fristname(class="form-control is-invalid") }}
+														<div class="invalid-feedback">
+															{% for error in form.fristname.errors %}
+																<span>{{ error }}</span>
+															{% endfor %}
+														</div>
+													 {% else %}
+															{{ form.fristname(class="form-control") }}
+													{% endif %}
+											</div>
+
+											<div class="form-group col-md-6">
+												{{ form.lastname.label}}
+													{% if form.lastname.errors %}
+														{{ form.lastname(class="form-control  is-invalid") }}
+														<div class="invalid-feedback">
+															{% for error in form.lastname.errors %}
+																<span>{{ error }}</span>
+															{% endfor %}
+														</div>
+													 {% else %}
+															{{ form.lastname(class="form-control") }}
+													{% endif %}
+											</div>
+
+											<div class="form-group col-md-6">
+											{{ form.email.label}}
+												{% if form.email.errors %}
+													{{ form.email(class="form-control is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in form.email.errors %}
+															<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+												 {% else %}
+														{{ form.email(class="form-control") }}
+												{% endif %}
+											</div>
+
+											<div class="form-group  col-md-6">
+											{{ form.password.label}}
+												{% if form.password.errors %}
+													{{ form.password(class="form-control is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in form.password.errors %}
+															<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+												 {% else %}
+														{{ form.password(class="form-control") }}
+												{% endif %}
+											</div>
+
+											<div class="form-group  col-md-6">
+											{{ form.confirm_password.label }}
+												{% if form.confirm_password.errors %}
+													{{ form.confirm_password(class="form-control  is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in form.confirm_password.errors %}
+															<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+												 {% else %}
+														{{ form.confirm_password(class="form-control") }}
+												{% endif %}
+											</div>
+
+											<div class="form-group col-md-6">
+											{{ form.phone.label }}
+												{% if form.phone.errors %}
+													{{ form.phone(class="form-control  is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in form.phone.errors %}
+															<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+												 {% else %}
+														{{ form.phone(class="form-control") }}
+												{% endif %}
+											</div>
+
+											<div class="form-group col-md-6">
+											{{ form.address.label}}
+												{% if form.address.errors %}
+													{{ form.address(class="form-control  is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in form.address.errors %}
+															<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+												 {% else %}
+														{{ form.address(class="form-control") }}
+												{% endif %}
+											</div>
+
+									<div class="form-group col-md-6">
+									 <label for="district" >District</label>
+											<select name="district" class="form-control" id="district">
+
+											{% for dis in districts %}
+										   <option value="{{dis.id}}">{{dis.districtName}}</option>
+											{% endfor %}
+										</select>
+
+									</div>
+
+									<div class="form-group col-md-6">
+									 <label for="area">Area</label>
+											<select name="area" class="form-control" id="area">
+
+											{% for area in areas %}
+										   <option value="{{area.id}}" >{{area.areaName}}</option>
+											{% endfor %}
+										</select>
+									</div>
+
+									<div class="form-group col-md-6">
+										<label for="devisionoffice">Devision office</label>
+											<select name="devisionoffice" class="form-control" id="devisionoffice">
+											{% for devisionoffice in devisionoffices %}
+												<option value="{{devisionoffice.id}}" >{{devisionoffice.officeName}}</option>
+											{% endfor %}
+										</select>
+									</div>
+                                    <div class="form-group col-md-6">
+											{{ form.usertype.label}}
+												{% if form.usertype.errors %}
+													{{ form.usertype(class="form-control  is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in form.usertype.errors %}
+															<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+												 {% else %}
+														{{ form.usertype(class="form-control") }}
+												{% endif %}
+									</div>
+
+							<div class="form-group col-md-6">
+									{{form.recaptcha}}
+											{% for error in form.recaptcha.errors %}
+											<span style="color:red">{{ error }}</span>
+											{% endfor %}
+
+							</div>
+                        {{form.submit(class="btn btn-primary")}}
+						</div>
+                        </form>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+         <p id="addworker" style="color:red;"></p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        <script>
+         var formErrors = {% if form.errors %}true{% else %}false{% endif %};
+             if (formErrors) {
+                    document.getElementById("addworker").innerHTML = 'New User is not submitted database your input data is not valid please check Add User dialog box';
+                    }
+             $(document).ready(function() {
+                    $('#allusers').DataTable();
+
+                } );
+
+        </script>
+        <table class="table table-borderless" id="allusers">
+            <thead>
+                <tr>
+                  <th></th>
+                  <th >Frist Name</th>
+                  <th >Last Name</th>
+                  <th >E-mail</th>
+                  <th >Phone</th>
+                  <th>Account Type</th>
+                  <th >Status</th>
+                  <th >Update </th>
+                </tr>
+            </thead>
+            <tbody>
+                 {% for  user in users %}
+                    <tr>
+                    <td><img src="/static/profilepics/{{user.profile}}" class="avatar1"></td>
+                    <td>{{user.fristname}}</td>
+                    <td>{{user.lastname}}</td>
+                    <td>{{user.email}}</td>
+                    <td>{{user.phone}}</td>
+                    <td>{{user.usertype}}</td>
+                     {%if  user.active==1 %}
+                         <td><p style="color:#00FF00;" class="font-weight-bold">Active</p></td>
+                     {%else%}
+                        <td ><p style="color:#FF0000;" class="font-weight-bold">Deactive</p></td>
+                     {% endif %}
+                    <td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#UPDATEUSER" value="{{user.id}}">Update</button></td>
+
+                    </tr>
+                 {% endfor %}
+            </tbody>
+        </table>
+        		<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="UPDATEUSER">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                          <div class="row">
+                              <h5 class="modal-title" id="">Update User</h5>
+                          </div>
+
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                          <script>
+                            function validateForm() {
+                                 document.getElementById("fnmevalidate").innerHTML = '';
+                                 document.getElementById("lnmevalidate").innerHTML = '';
+                                 document.getElementById("mailvalidate").innerHTML = '';
+                                 document.getElementById("phnvalidate").innerHTML = '';
+                                 document.getElementById("adrvalidate").innerHTML = '';
+                                 var fristname = document.myForm.fristname1;
+                                 var lastname = document.myForm.lastname1;
+                                 var email = document.myForm.email;
+                                 var phone = document.myForm.phone1;
+                                 var address = document.myForm.address1;
+
+                                 if(fristnameValidation(fristname))
+                                 {
+                                    if(lastnameValidation(lastname))
+                                    {
+                                        if(emailValidation(email))
+                                        {
+                                            if(phoneValidation(phone))
+                                            {
+                                                if(addressValidation(address))
+                                                {
+                                                    return true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                 }
+                                  return false;
+                                 function fristnameValidation(fristname)
+                                 {
+                                    var letters = /^[A-Za-z]+$/;
+                                    if(fristname.value.match(letters))
+                                    {
+                                         return true;
+                                    }
+                                    else
+                                    {
+                                        document.getElementById("fnmevalidate").innerHTML = 'Frist Name Empty or worng data type ';
+                                        return false;
+                                    }
+
+                                 }
+                                 function lastnameValidation(lastname)
+                                 {
+                                    var letters = /^[A-Za-z]+$/;
+                                    if(lastname.value.match(letters))
+                                    {
+                                         return true;
+                                    }
+                                    else
+                                    {
+                                        document.getElementById("lnmevalidate").innerHTML = 'Last Name Empty or worng data type ';
+                                        return false;
+                                    }
+
+                                 }
+                                 function emailValidation(email)
+                                 {
+                                    var mailformat = /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
+                                    if(email.value.match(mailformat))
+                                    {
+                                         return true;
+                                    }
+                                    else
+                                    {
+                                        document.getElementById("mailvalidate").innerHTML = 'Email Empty or worng data type ';
+                                        return false;
+                                    }
+
+                                 }
+                                 function phoneValidation(phone)
+                                 {
+                                      var phoneno = /^\d{9}$/;
+                                      if(phone.value.match(phoneno))
+                                      {
+                                          return true;
+                                      }
+                                      else
+                                      {
+                                         document.getElementById("phnvalidate").innerHTML = 'Not a valid Phone Number ';
+
+                                         return false;
+                                      }
+
+                                 }
+                                 function addressValidation(address)
+                                 {
+                                     if (address.value.length == 0)
+                                    {
+                                     document.getElementById("adrvalidate").innerHTML = 'Please Fill Address';
+                                     /*alert("Fill Address");*/
+                                     return false;
+                                     }
+                                    return true;
+                                 }
+                            }
+                          </script>
+                        <form method="POST" name="myForm" action="/farmer_update" onsubmit="return validateForm()" >
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="fristname1">Frist Name</label>
+                                      <input class="form-control" id="fristname1" name="fristname1"  type="text">
+                                    <p id="fnmevalidate" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                     <label for="lastname">Last Name</label>
+                                       <input class="form-control" id="lastname1" name="lastname1" required="" type="text" value="">
+                                     <p id="lnmevalidate" style="color:red;"></p>
+                                </div>
+                                <div class="form-group col-md-6">
+                                     <label for="email">Email</label>
+                                       <input class="form-control" id="email" name="email" required="" type="text" value="">
+                                     <p id="mailvalidate" style="color:red;"></p>
+                                </div>
+                                 <div class="form-row col-md-6">
+                                     <label for="phone">Phone</label>
+                                        <input class="form-control" id="phone1" name="phone1" required="" type="text" value="">
+                                     <p id="phnvalidate" style="color:red;"></p>
+                                 </div>
+                                 <div class="form-group col-md-6">
+                                      <label for="address">Address</label>
+                                        <textarea class="form-control" id="address1" name="address1" ></textarea>
+                                      <p id="adrvalidate" style="color:red;"></p>
+                                 </div>
+                                 <div class="form-row col-md-6">
+                                     <label for="type">User Type</label>
+                                      <select class="form-control" id="type1" name="type1" required="">
+                                         <option value="Farmer">Farmer</option>
+                                         <option value="ADO">Agrarian development officer</option>
+                                         <option value="ARPA">Agriculture research and product assistant</option>
+                                      </select>
+                                 </div>
+                                <div class="form-group col-md-6">
+                                   <label for="active">Active</label>
+                                      <select class="form-control" id="status" name="status" required="">
+                                            <option value="1">Active</option>
+                                            <option value="0">Deactive</option>
+                                      </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                   <label for="district">District</label>
+                                     <select name="district" class="form-control" id="district">
+                                          {% for  district in districts %}
+                                            <option value="{{district.id}}">{{district.districtName}}</option>
+                                          {% endfor %}
+                                     </select>
+                                </div>
+                                 <div class="form-group col-md-6">
+                                   <label for="area">Area</label>
+                                     <select name="area" class="form-control" id="area">
+                                         {% for  area in areas %}
+                                            <option value="{{area.id}}">{{area.areaName}}</option>
+                                          {% endfor %}
+                                     </select>
+                                </div>
+                                 <div class="form-group col-md-6">
+                                   <label for="devisionoffice">Devision office</label>
+                                     <select name="devisionoffice" id="devisionoffice" class="form-control" id="devisionoffice">
+                                         {% for  devisionoffice in devisionoffices %}
+                                            <option value="{{devisionoffice.id}}">{{devisionoffice.officeName}}</option>
+                                         {% endfor %}
+                                     </select>
+                                </div>
+
+                            </div>
+                                <input  id="userid" name="userid" type="hidden">
+                             <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Update">
+                        </form>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+    </div>
+    <script>
+        $(".btn-danger").click(function() {
+               var id = $(this).val();
+               console.log(id);
+               fetch('/updte_farmers/'+ id).then(function(response){
+                    response.json().then(function(data){
+                         for(let user_detail of data.get_user_details){
+                            var frist_name = user_detail.fristname;
+                            document.getElementById("fristname1").value = frist_name;
+                            var last_name = user_detail.lastname;
+                            document.getElementById("lastname1").value = last_name;
+                            var email = user_detail.email;
+                            document.getElementById("email").value = email;
+                            var phone = user_detail.phone;
+                            document.getElementById("phone1").value = phone;
+                            var address = user_detail.address;
+                            document.getElementById("address1").value = address;
+                            var usertype = user_detail.usertype;
+                            document.getElementById("type1").value = usertype;
+                            var active = user_detail.active ? 1:0;
+                            document.getElementById("status").value = active;
+                            var id = user_detail.id;
+                            document.getElementById("userid").value = id;
+                            var devisionoffice_id = user_detail.devisionoffice_id;
+                            var profile = user_detail.profile;
+                            document.getElementById("devisionoffice").value = devisionoffice_id;
+
+                         }
+                     });
+               });
+
+
+        });
+       let district_select = document.getElementById('district')
+    let area_select = document.getElementById('area')
+    let devisionoffice_select = document.getElementById('devisionoffice')
+
+    district_select.onchange = function(){
+        district = district_select.value;
+
+       fetch('/district/' + district).then(function(response){
+            response.json().then(function(data){
+                  let optionHTML = '';
+                    for(let area of data.areas){
+                        optionHTML += '<option value="'+area.id+'">' +area.areaName+ '</option>';
+                    }
+                    area_select.innerHTML = optionHTML;
+
+             });
+       });
+
+    }
+
+    area_select.onchange = function(){
+        area = area_select.value;
+        fetch('/area/'+ area).then(function(response){
+         response.json().then(function(data){
+         let optionHTML = '';
+          for(let devisionoffice of data.devisionoffices){
+                        optionHTML += '<option value="'+devisionoffice.id+'">' +devisionoffice.officeName+ '</option>';
+                    }
+                   devisionoffice_select.innerHTML = optionHTML;
+
+             });
+        });
+
+    }
+    </script>
+    {%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+					<h4>ඔබට මෙම පිටුවට පිවිසිමට අවසර නොමැත</h4>
+					<h2>Oops! You can't Access this Page</h2>
+					<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+					<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">ආපසු මුල් පිටුවට</a>
+				</div>
+			</div>
+        {% endif %}
+{%else%}
+        <h1>Your Account is Deactive</h1>
+{% endif %}
+{% endblock %}

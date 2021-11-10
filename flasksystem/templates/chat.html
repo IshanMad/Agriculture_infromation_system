@@ -1,0 +1,393 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+{%if  current_user.active==1 %}
+<style>
+	.wrapper {
+    display: flex;
+}
+
+#main-section {
+    overflow: hidden; /* Makee this div contain its floated children */
+    width: 100%;
+}
+
+#sidebar {
+    margin-top: 2em;
+    float: left; /* Make this div as wide as its contents */
+    min-height: 96vh;
+    padding-left: 1em;
+    padding-top: 3em;
+    padding-right:1em;
+    border-right: 0.5px solid #898c91;
+}
+
+#sidebar p {
+    padding-left: 2em;
+    padding-right:2em;
+}
+
+#sidebar p:hover {
+    background-color: #ffc107;
+}
+
+#sidebar h4 {padding-left: 0.5em;}
+
+
+#sidebar.view-sidebar {display: none;}
+
+#show-sidebar-button {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.5s;
+    color: #335177;
+}
+
+@media (max-width: 567px) {
+    #sidebar {
+        display: none;
+    }
+
+    #sidebar.view-sidebar {
+        display: block;
+    }
+
+    #show-sidebar-button {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+#rightside-pannel {
+    overflow: hidden; /* Make this div take up the rest of the horizontal space, and no more */
+}
+
+#display-message-section {
+    margin-top: 5em;
+    min-height: 82vh;
+    max-height: 82vh;
+    overflow-y: auto; /*Make  this section scrolable */
+}
+
+#input-area {
+    padding-left: 1em;
+    padding-right: 1em;
+    bottom: 0;
+}
+
+input[type=text]:focus{
+    border-color: #ffc107;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 10px #ffc107;
+}
+
+@keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+.others-msg {
+    margin-right:7em;
+    margin-left: 1em;
+    padding: 0.5em 0.5em 0.5em 1em;
+    border-radius: 5px;
+    border-color: grey;
+    border-width: 0.5px;
+    border-style: solid;
+    background-color: #C2DBFB;
+    /* animation */
+    animation-name: fadeIn;
+    animation-duration: 0.75s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in-out;
+}
+
+.my-msg {
+    margin-left:7em;
+    margin-right:1em;
+    padding: 0.5em 0.5em 0.5em 1em;
+    border-radius: 5px;
+    border-color: #206ED2;
+    border-width: 1px;
+    border-style: solid;
+    /* animation */
+    animation-name: fadeIn;
+    animation-duration: 0.75s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in-out;
+}
+
+.system-msg {
+    margin-right:7em;
+    margin-left: 1em;
+    padding: 0.5em 0.5em 0.5em 1em;
+    color: #656d78;
+    font-size:0.9em;
+}
+
+.timestamp {
+    color: #656d78;
+    font-size:0.7em;
+}
+
+.other-username {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #206ED2;
+}
+
+.my-username {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #FF6B13;
+}
+
+#msg-input {
+    border-color: #ffc107;
+    border-width: 5px;
+}
+
+#get-username {
+    display: none !important;
+}
+.bg-primary {
+    background-color: #212529!important;
+}
+
+</style>
+
+
+
+
+
+
+
+        <!-- Flash error messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <p class=formError>{{ messages[0] }}</p>
+            {% endif %}
+        {% endwith %}
+
+        <div class="wrapper">
+
+            <!-- Main section start -->
+            <div id="main-section">
+
+                <!-- Sidebar start -->
+                <nav id="sidebar">
+                    <h4>Rooms</h4>
+                    {% for room in rooms %}
+                        <p id="{{ room|title }}" class="select-room cursor-pointer">{{ room|title }}</p>
+                    {% endfor %}
+                </nav>
+                <!-- Sidebar end -->
+
+                <!-- Rightside pannel start -->
+                <div id="rightside-pannel">
+
+                    <!-- Display message start-->
+                    <div id="display-message-section">
+                    </div>
+                    <!-- Display message end -->
+
+                    <!-- Type message start -->
+                   <div id="input-area" class="input-group mb-3">
+                        <input type="text" id="user_message" class="form-control" placeholder="Type here..." aria-label="Type a message" aria-describedby="basic-addon2" autocomplete="off">
+                        <div class="input-group-append">
+                            <button id="send_message" class="btn btn-warning" type="button">SEND <i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                    <!-- Type message end -->
+                </div>
+                <!-- Rightside pannel end -->
+            </div>
+            <!-- Main section end -->
+        </div>
+        <!-- Wrapper end -->
+
+        <!-- Get username -->
+        <span id="get-username">{{ username }}</span>
+
+        <!-- Custom chat JS -->
+
+
+        <!-- SocketIO JS -->
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+        <!-- Custom SocketIO JS -->
+
+
+        <!-- Bootstrap -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+        <!-- Font Awesome JS -->
+        <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+        <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Make sidebar collapse on click
+    document.querySelector('#show-sidebar-button').onclick = () => {
+        document.querySelector('#sidebar').classList.toggle('view-sidebar');
+    };
+
+    // Make 'enter' key submit message
+    let msg = document.getElementById("user_message");
+    msg.addEventListener("keyup", function(event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            document.getElementById(".send_message").click();
+        }
+    });
+});
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Connect to websocket
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+    // Retrieve username
+    const username = document.querySelector('#get-username').innerHTML;
+
+    // Set default room
+    let room = "Crop"
+    joinRoom("Crop");
+
+    // Send messages
+    document.querySelector('#send_message').onclick = () => {
+        socket.emit('incoming-msg', {'msg': document.querySelector('#user_message').value,
+            'username': username, 'room': room});
+
+        document.querySelector('#user_message').value = '';
+    };
+
+    // Display all incoming messages
+    socket.on('message', data => {
+
+        // Display current message
+        if (data.msg) {
+            const p = document.createElement('p');
+            const span_username = document.createElement('span');
+            const span_timestamp = document.createElement('span');
+            const br = document.createElement('br')
+            // Display user's own message
+            if (data.username == username) {
+                    p.setAttribute("class", "my-msg");
+
+                    // Username
+                    span_username.setAttribute("class", "my-username");
+                    span_username.innerText = data.username;
+
+                    // Timestamp
+                    span_timestamp.setAttribute("class", "timestamp");
+                    span_timestamp.innerText = data.time_stamp;
+
+                    // HTML to append
+                    p.innerHTML += span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML
+
+                    //Append
+                    document.querySelector('#display-message-section').append(p);
+            }
+            // Display other users' messages
+            else if (typeof data.username !== 'undefined') {
+                p.setAttribute("class", "others-msg");
+
+                // Username
+                span_username.setAttribute("class", "other-username");
+                span_username.innerText = data.username;
+
+                // Timestamp
+                span_timestamp.setAttribute("class", "timestamp");
+                span_timestamp.innerText = data.time_stamp;
+
+                // HTML to append
+                p.innerHTML += span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
+
+                //Append
+                document.querySelector('#display-message-section').append(p);
+            }
+            // Display system message
+            else {
+                printSysMsg(data.msg);
+            }
+
+
+        }
+        scrollDownChatWindow();
+    });
+
+    // Select a room
+    document.querySelectorAll('.select-room').forEach(p => {
+        p.onclick = () => {
+            let newRoom = p.innerHTML
+            // Check if user already in the room
+            if (newRoom === room) {
+                msg = `You are already in ${room} room.`;
+                printSysMsg(msg);
+            } else {
+                leaveRoom(room);
+                joinRoom(newRoom);
+                room = newRoom;
+            }
+        };
+    });
+
+    // Logout from chat
+    document.querySelector("#logout-btn").onclick = () => {
+        leaveRoom(room);
+    };
+
+    // Trigger 'leave' event if user was previously on a room
+    function leaveRoom(room) {
+        socket.emit('leave', {'username': username, 'room': room});
+
+        document.querySelectorAll('.select-room').forEach(p => {
+            p.style.color = "black";
+        });
+    }
+
+    // Trigger 'join' event
+    function joinRoom(room) {
+
+        // Join room
+        socket.emit('join', {'username': username, 'room': room});
+
+        // Highlight selected room
+        document.querySelector('#' + CSS.escape(room)).style.color = "#ffc107";
+        document.querySelector('#' + CSS.escape(room)).style.backgroundColor = "white";
+
+        // Clear message area
+        document.querySelector('#display-message-section').innerHTML = '';
+
+        // Autofocus on text box
+        document.querySelector("#user_message").focus();
+    }
+
+    // Scroll chat window down
+    function scrollDownChatWindow() {
+        const chatWindow = document.querySelector("#display-message-section");
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Print system messages
+    function printSysMsg(msg) {
+        const p = document.createElement('p');
+        p.setAttribute("class", "system-msg");
+        p.innerHTML = msg;
+        document.querySelector('#display-message-section').append(p);
+        scrollDownChatWindow()
+
+        // Autofocus on text box
+        document.querySelector("#user_message").focus();
+    }
+});
+</script>
+{%else%}
+        <h1>Your Account is Deactive</h1>
+{% endif %}
+{% endblock %}

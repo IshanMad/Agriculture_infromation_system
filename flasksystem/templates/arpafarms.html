@@ -1,0 +1,77 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+    {%if  current_user.active==1 %}
+        {%if  current_user.usertype=='ARPA' %}
+                 <script>
+          $(document).ready(function() {
+                    $('#example').DataTable();
+                } );
+        </script>
+		<div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1>My All Farms</h1>
+                </div>
+                <div class="col-md-4">
+                    <form action="/search" method="get">
+
+                       <div class="input-group">
+                           <span class="input-group-prepend">
+                            <a href="{{ url_for('addnewfarm_by_arpa_officer') }}" class="btn btn-info" style="margin-left:140px;">Add new Farm</a>
+                           </span>
+                       </div>
+                    </form>
+                </div>
+        </div>
+			{% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <table class="table table-bordered table-dark" id="example">
+              <thead>
+                <tr>
+
+                  <th scope="col">Farm Name</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Surface</th>
+                  <th scope="col">More</th>
+                </tr>
+              </thead>
+                {% for  row in farmdata %}
+                <tr>
+                  <td>{{row.farmname}}</td>
+                  <td>{{row.phone}}</td>
+                  <td>{{row.address}}</td>
+                  <td>{{row.email}}</td>
+                  <td>{{row.surface}}</td>
+                  <td><a href="{{url_for('manage_farms_arpa',id=row.id)}}" class="btn btn-info">Visit</a></td>
+
+                </tr>
+               {% endfor %}
+
+            </table>
+
+		</div>
+
+        {%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+					<h4>ඔබට මෙම පිටුවට පිවිසිමට අවසර නොමැත</h4>
+					<h2>Oops! You can't Access this Page</h2>
+					<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+					<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">ආපසු මුල් පිටුවට</a>
+				</div>
+			</div>
+        {% endif %}
+    {%else%}
+            <h1>Your Account is Deactive</h1>
+    {% endif %}
+{% endblock %}

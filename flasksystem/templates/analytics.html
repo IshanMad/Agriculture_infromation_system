@@ -1,0 +1,126 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+
+<style>
+     .map-responsive{
+    overflow:hidden;
+    padding-bottom:50%;
+    position:relative;
+    height:0;
+}
+.map-responsive iframe{
+    left:0;
+    top:0;
+    height:100%;
+    width:100%;
+    position:absolute;
+}
+.mapboxgl-popup {
+max-width: 200px;
+}
+#menu {
+position: absolute;
+background: #fff;
+padding: 10px;
+font-family: 'Open Sans', sans-serif;
+}
+</style>
+
+
+{%if  current_user.active==1 %}
+<div class="container">
+        <ul class="nav justify-content-center">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('analytics') }}">All Farms</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('infectedpestmap') }}">Infected Farms</a>
+          </li>
+           <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('charts') }}">Charts</a>
+          </li>
+
+        </ul>
+
+        <h4 class="font-weight-bold">All Farms In District</h4>
+        <div id='map'class="map-responsive"></div>
+        <div id="menu">
+        <input
+        id="streets-v11"
+        type="radio"
+        name="rtoggle"
+        value="streets"
+        checked="checked"
+        />
+        <label for="streets-v11">streets</label>
+        <input id="light-v10" type="radio" name="rtoggle" value="light" />
+        <label for="light-v10">light</label>
+        <input id="dark-v10" type="radio" name="rtoggle" value="dark" />
+        <label for="dark-v10">dark</label>
+        <input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
+        <label for="outdoors-v11">outdoors</label>
+        <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" />
+        <label for="satellite-v9">satellite</label>
+        </div>
+</div>
+        <script>
+
+        window.onload = function() {
+        mapboxgl.accessToken = 'pk.eyJ1IjoiaXNoOTYiLCJhIjoiY2tmNTdpcDcxMGs4ejJyczdoNjFpZGs3YiJ9.qsiKQeWYis1y0V6dLcEELw';
+        var map = new mapboxgl.Map({
+        container: 'map',
+        center: [ 79.9607,6.5854],
+        zoom: 10,
+        style: 'mapbox://styles/mapbox/streets-v11'
+
+        });
+        var layerList = document.getElementById('menu');
+        var inputs = layerList.getElementsByTagName('input');
+
+        function switchLayer(layer) {
+        var layerId = layer.target.id;
+        map.setStyle('mapbox://styles/mapbox/' + layerId);
+        }
+
+        for (var i = 0; i < inputs.length; i++) {
+        inputs[i].onclick = switchLayer;
+        }
+        map.addControl(new mapboxgl.NavigationControl());
+        fetch('/get_all_farms').then(function(response){
+                    response.json().then(function(data){
+
+                          for(let farm of data.get_all_farms)
+                          {
+                               var popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                                [['<p>Farm Name:'+farm.farmname+'</p>'],
+                                ['<p>Address:'+farm.address+'</p>'],
+                                ['<p>Phone:'+farm.phone+'</p>']]
+
+
+                                );
+
+                                // create DOM element for the marker
+                                var el = document.createElement('div');
+                                el.id = 'marker';
+                              new mapboxgl.Marker({ }).setLngLat([farm.longitude,farm.latitude ]).setPopup(popup).addTo(map);
+
+
+
+
+                          }
+
+                     });
+               });
+        };
+        </script>
+
+</div>
+
+{%else%}
+        <h1>Your Account is Deactive</h1>
+{% endif %}
+{% endblock %}

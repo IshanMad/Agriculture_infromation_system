@@ -1,0 +1,37 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+<style>
+    .leafchart {
+        margin-left:20px;
+    }
+    .vertical-center {
+	margin-left:auto;
+	margin-right: auto;
+	display: block;
+	}
+</style>
+{%if  current_user.active==1 %}
+
+        <div class="container">
+           <div class="col-md-8">
+                    <h3>Paddy Leaf Color Chart</h3>
+           </div>
+
+			<div class="leafchart">
+				<img src="\static\leafcolorchart\leafcolorchart.jpg" class="img-fluid rounded float-left img-thumbnail" alt="Leaf Chart">
+
+				<p class="">
+
+					Nitrogen (N) fertilizer is important in rice production. Apply N fertilizer several times during the growing season to ensure that the crop's nitrogen need is supplied, particularly at critical growth stages.
+
+The Leaf Color Chart (LCC) is used to determine the N fertilizer needs of rice crops. LCC has four green strips, with color ranging from yellow green to dark green. It determines the greenness of the rice leaf, which indicates its N content.
+					<iframe width="493" class="vertical-center" height="270" src="https://www.youtube.com/embed/fj-zbgys8E0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				</p>
+			</div>
+		</div>
+
+
+{%else%}
+        <h1>Your Account is Deactive</h1>
+{% endif %}
+{% endblock %}

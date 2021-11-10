@@ -1,0 +1,119 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+
+
+
+    {%if  current_user.active==1 %}
+        {%if  current_user.usertype=='Farmer' %}
+
+
+
+       <div class="col-md-8 content-center">
+                      <form method="POST">
+                        {{ form.hidden_tag() }}
+                          <div class="form-row">
+                              <div class="form-group col-md-6">
+                                  {{ form.fristname.label}}
+                                    {% if form.fristname.errors %}
+                                        {{ form.fristname(class="form-control  is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.fristname.errors %}
+                                                    <span>{{ error }}</span>
+                                        {% endfor %}
+                                            </div>
+                                    {% else %}
+                                        {{ form.fristname(class="form-control") }}
+                                  {% endif %}
+
+                             </div>
+                            <div class="form-group col-md-6">
+                              {{ form.lastname.label}}
+                              {% if form.lastname.errors %}
+                                    {{ form.lastname(class="form-control  is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.lastname.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                {% else %}
+                                    {{ form.lastname(class="form-control") }}
+                                {% endif %}
+                            </div>
+                              <div class="form-group col-md-6">
+                           {{ form.gender.label}}
+                              {% if form.gender.errors %}
+                                    {{ form.gender(class="form-control  is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.gender.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                {% else %}
+                                    {{ form.gender(class="form-control") }}
+                                {% endif %}
+                          </div>
+                           <div class="form-group col-md-6">
+                           {{ form.dob.label}}
+                              {% if form.dob.errors %}
+                                    {{ form.dob(class="form-control  is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.dob.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                {% else %}
+                                    {{ form.dob(class="form-control") }}
+                                {% endif %}
+                          </div>
+                          <div class="form-group col-md-6">
+                             {{ form.address.label}}
+                                    {% if form.address.errors %}
+                                                {{ form.address(class="form-control  is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.address.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                             {% else %}
+                                                    {{ form.address(class="form-control") }}
+                                            {% endif %}
+                          </div>
+                          <div class="form-row col-md-6">
+                             {{ form.phone.label}}
+                                    {% if form.phone.errors %}
+                                                {{ form.phone(class="form-control  is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.phone.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                    {% else %}
+                                         {{ form.phone(class="form-control") }}
+                                    {% endif %}
+                          </div>
+                          </div>
+                           <input type="hidden" name="id" value="1" />
+                      </br>
+                               {{form.submit(class="btn btn-primary")}}
+                        </form>
+       </div>
+
+
+  </div>
+
+        {%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+					<h4>ඔබට මෙම පිටුවට පිවිසිමට අවසර නොමැත</h4>
+					<h2>Oops! You can't Access this Page</h2>
+					<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+					<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">ආපසු මුල් පිටුවට</a>
+				</div>
+			</div>
+        {% endif %}
+    {%else%}
+        <h1>Your Account is Deactive</h1>
+    {% endif %}
+
+{% endblock %}

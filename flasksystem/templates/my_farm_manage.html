@@ -1,0 +1,121 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw==" crossorigin=""></script>
+    {%if  current_user.active==1 %}
+        {%if  current_user.usertype=='Farmer' %}
+<div class="container-fluid">
+     <ul class="nav nav-pills justify-content-center">
+          {% for  myfarm in farmdata %}
+              <li class="nav-item">
+                <a class="nav-link " href="{{url_for('my_farm',id=myfarm.id)}}">Home</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Resoursces</a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{url_for('farm_worker',id=myfarm.id)}}">Employee</a>
+                  <a class="dropdown-item" href="#">Machinery</a>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#">Separated link</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('farm_crop',id=myfarm.id)}}">Farm Crop Management</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled" href="#">Disabled</a>
+              </li>
+          {% endfor %}
+     </ul>
+            <div class="row">
+              <div class="col-sm-4">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Location</h5>
+                      {% for  myfarm in farmdata %}
+                              <div  id="mapDiv" style="width: 333.97px; height: 178px" class="img-thumbnail"></div>
+                              <script>
+                                // position we will use later
+                                var lat = {{myfarm.latitude}};
+                                var lon = {{myfarm.longitude}};
+
+                                // initialize map
+                                map = L.map('mapDiv').setView([lat, lon], 10.5);
+
+                                // set map tiles source
+                                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                                  maxZoom: 18,
+                                }).addTo(map);
+
+                                // add marker to the map
+                                marker = L.marker([lat, lon]).addTo(map);
+
+                                // add popup to the marker
+                                marker.bindPopup("<b>{{myfarm.farmname}}</b><br />{{myfarm.address}}<br />{{myfarm.phone}}<br>{{myfarm.email}}</br>");
+                              </script>
+                            {% endfor %}
+
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Crop</h5>
+                      <img class="card-img-top" src="\static\images\frmcrp.jpg" alt="User Icon">
+                    <p class="card-text">Mange your Fram Crop Related Tasks</p>
+                      {% for  myfarm in farmdata %}
+                            <a href="{{url_for('farm_crop',id=myfarm.id)}}" class="btn btn-primary">Manage Crops in Farm</a>
+                       {% endfor %}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-4">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Weather</h5>
+                      {% for  myfarm in farmdata %}
+
+<iframe class="rounded float-left" width="320px" height="178" src="https://embed.windy.com/embed2.html?lat=7.831&lon=81.266&detailLat=6.932&detailLon=79.848&width=333.97&height=178&zoom=8&level=surface&overlay=wind&product=ecmwf&menu=&message=&marker=true&lat={{myfarm.latitude}}&lon={{myfarm.longitude}}&calendar=24&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
+                      {% endfor %}
+
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Farm Workers</h5>
+                      <img class="card-img-top" src="\static\images\frmwker.jpg" alt="User Icon">
+                    <p class="card-text">Mange your Fram Workers</p>
+                      {% for  myfarm in farmdata %}
+                            <a href="{{url_for('farm_worker',id=myfarm.id)}}" class="btn btn-primary">Manage Workers in Farm</a>
+                       {% endfor %}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+        {%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+					<h4>ඔබට මෙම පිටුවට පිවිසිමට අවසර නොමැත</h4>
+					<h2>Oops! You can't Access this Page</h2>
+					<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+					<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">ආපසු මුල් පිටුවට</a>
+				</div>
+			</div>
+        {% endif %}
+    {%else%}
+        <h1>Your Account is Deactive</h1>
+    {% endif %}
+</div>
+{% endblock %}

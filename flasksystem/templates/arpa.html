@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <link type="text/css" rel="stylesheet" href="../static/content/style.css" />
+
+		{%if  current_user.usertype=='ARPA' %}
+		<h1>Agriculture Research and Product Assistant</h1>
+		{%else%}
+			<div id="notfound">
+				<div class="notfound">
+					<div class="notfound-404"></div>
+						<h4>ඔබට මෙම පිටුවට පිවිසිමට අවසර නොමැත</h4>
+						<h2>Oops! You can't Access this Page</h2>
+						<p>Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+						<a href="{{url_for('loginhome')}}" class="btn btn-outline-info">ආපසු මුල් පිටුවට</a>
+				</div>
+			</div>
+		{% endif %}
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "afterloginlayout.html" %}
+{% block content %}
+<style>
+    .iframe {
+        margin-left:20px;
+    }
+</style>
+{%if  current_user.active==1 %}
+
+        <div class="container">
+           <div class="col-md-8">
+                    <h3>Live Weather</h3>
+           </div>
+        </div>
+        <div class="iframe">
+            <iframe width="1100" height="520" src="https://embed.windy.com/embed2.html?lat=7.798&lon=80.909&detailLat=7.695&detailLon=80.607&width=1000&height=450&zoom=7&level=surface&overlay=rain&product=ecmwf&menu=&message=true&marker=&calendar=24&pressure=true&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1" frameborder="0">
+
+            </iframe>
+        </div>
+
+
+{%else%}
+        <h1>Your Account is Deactive</h1>
+{% endif %}
+{% endblock %}
