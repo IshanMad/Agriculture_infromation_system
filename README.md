@@ -5,7 +5,7 @@ this is python flask based agriculture information system project.
 </br>
 2.install required libarys in the mentioned requirement txt file 
 </br>
-3.create database s in post gre sql and run migrations using sql alchemy
+3.create database  in post gre sql and run migrations using sql alchemy
 </br>
 4.enjoy project
 </br>
